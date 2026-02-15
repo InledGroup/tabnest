@@ -14,11 +14,13 @@ import { useNewsFeed } from './hooks/useNewsFeed';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useTV } from './hooks/useTV';
 import { useRadio } from './hooks/useRadio';
+import { useUpdater } from './hooks/useUpdater';
 import { t } from './utils/i18n';
 import { DEFAULT_BOOKMARKS, DEFAULT_FOLDERS } from './utils/defaultBookmarks';
 
 function App() {
   const { settings, updateSettings, loading: settingsLoading } = useSettings();
+  const { updateUrl } = useUpdater('tabnest-2-26');
   const { 
     bookmarks, 
     folders, 
@@ -133,6 +135,35 @@ function App() {
 
       {/* Contenido Scrolleable */}
       <div className="relative z-10 min-h-screen flex flex-col items-center p-8">
+        {/* Banner de Actualización */}
+        <AnimatePresence>
+          {updateUrl && (
+            <motion.div 
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -50, opacity: 0 }}
+              className="fixed top-0 left-0 right-0 z-[100] flex justify-center p-4"
+            >
+              <div className="bg-blue-600/80 backdrop-blur-xl border border-blue-400/30 px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-xl">
+                    <SettingsIcon size={18} className="text-white animate-spin-slow" />
+                  </div>
+                  <span className="text-sm font-black uppercase tracking-widest text-white">{t('updateAvailable', lang)}</span>
+                </div>
+                <a 
+                  href={updateUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-white text-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg shadow-black/20"
+                >
+                  {t('download', lang)}
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Botones de Navegación Lateral (Izquierda) */}
         <div className="fixed bottom-10 left-6 flex flex-col gap-3 z-40">
           <AnimatePresence>

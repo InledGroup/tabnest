@@ -46,7 +46,9 @@ export const translations = {
     schedule: 'Programación',
     disclaimer: 'Aviso Legal',
     privacy: 'Privacidad',
-    terms: 'Términos'
+    terms: 'Términos',
+    updateAvailable: 'Nueva actualización disponible',
+    download: 'Descargar'
   },
   en: {
     settings: 'Settings',
@@ -93,7 +95,9 @@ export const translations = {
     schedule: 'Schedule',
     disclaimer: 'Disclaimer',
     privacy: 'Privacy',
-    terms: 'Terms'
+    terms: 'Terms',
+    updateAvailable: 'New update available',
+    download: 'Download'
   }
 };
 
