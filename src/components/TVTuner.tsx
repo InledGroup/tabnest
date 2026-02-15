@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Hls from 'hls.js';
-import { X, Tv, Search, Play, Calendar } from 'lucide-react';
+import { X, Tv, Search, Play, Calendar, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { t } from '../utils/i18n';
 import type { Language } from '../utils/i18n';
@@ -18,12 +18,34 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
   const [filter, setFilter] = useState('');
   const [selectedChannel, setSelectedChannel] = useState<TVChannel | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [expandedAmbits, setExpandedAmbits] = useState<string[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
+  const currentProgramRef = useRef<HTMLDivElement>(null);
 
   const filteredChannels = channels.filter(c => 
     c.name.toLowerCase().includes(filter.toLowerCase())
   );
+
+  const groupedChannels = useMemo(() => {
+    const groups: Record<string, TVChannel[]> = {};
+    filteredChannels.forEach(channel => {
+      if (!groups[channel.ambit]) {
+        groups[channel.ambit] = [];
+      }
+      groups[channel.ambit].push(channel);
+    });
+    return groups;
+  }, [filteredChannels]);
+
+  const ambits = Object.keys(groupedChannels);
+
+  const toggleAmbit = (ambit: string) => {
+    setExpandedAmbits(prev => 
+      prev.includes(ambit) ? prev.filter(a => a !== ambit) : [...prev, ambit]
+    );
+  };
 
   const getCurrentProgram = (channel: TVChannel): TVProgram | null => {
     if (!channel.epg || channel.epg.length === 0) return null;
@@ -38,23 +60,35 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
   };
 
   useEffect(() => {
-    if (selectedChannel && !selectedChannel.isWeb && videoRef.current) {
-      if (Hls.isSupported()) {
-        if (hlsRef.current) {
-          hlsRef.current.destroy();
+    if (showSchedule && currentProgramRef.current) {
+      setTimeout(() => {
+        currentProgramRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [showSchedule, selectedChannel]);
+
+  useEffect(() => {
+    if (selectedChannel) {
+      setIsBuffering(true);
+      if (!selectedChannel.isWeb && videoRef.current) {
+        if (Hls.isSupported()) {
+          if (hlsRef.current) {
+            hlsRef.current.destroy();
+          }
+          const hls = new Hls();
+          hls.loadSource(selectedChannel.url);
+          hls.attachMedia(videoRef.current);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoRef.current?.play().catch(() => setIsBuffering(false));
+          });
+          hls.on(Hls.Events.FRAG_LOADED, () => setIsBuffering(false));
+          hlsRef.current = hls;
+        } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+          videoRef.current.src = selectedChannel.url;
+          videoRef.current.addEventListener('loadedmetadata', () => {
+            videoRef.current?.play().catch(() => setIsBuffering(false));
+          });
         }
-        const hls = new Hls();
-        hls.loadSource(selectedChannel.url);
-        hls.attachMedia(videoRef.current);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoRef.current?.play();
-        });
-        hlsRef.current = hls;
-      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-        videoRef.current.src = selectedChannel.url;
-        videoRef.current.addEventListener('loadedmetadata', () => {
-          videoRef.current?.play();
-        });
       }
     }
 
@@ -105,101 +139,123 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow overflow-y-auto p-8 custom-scrollbar">
+      <div className="flex-grow overflow-y-auto p-8 custom-scrollbar space-y-8">
         {loading ? (
           <div className="h-full flex flex-col items-center justify-center gap-4">
-            <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+            <Loader2 className="w-16 h-16 text-blue-500 animate-spin opacity-20" />
             <p className="text-white/40 font-bold uppercase tracking-widest animate-pulse">Sintonizando canales...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredChannels.map((channel, index) => {
-              const current = getCurrentProgram(channel);
-              const next = getNextProgram(channel);
+          ambits.map((ambit) => (
+            <div key={ambit} className="space-y-4">
+              <button 
+                onClick={() => toggleAmbit(ambit)}
+                className="flex items-center gap-2 text-lg font-black text-white/40 hover:text-white transition-colors uppercase tracking-widest"
+              >
+                {expandedAmbits.includes(ambit) ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                {ambit}
+                <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded-full ml-2">{groupedChannels[ambit].length}</span>
+              </button>
               
-              return (
-                <motion.button
-                  key={`${channel.url}-${index}`}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.01 }}
-                  onClick={() => setSelectedChannel(channel)}
-                  className="group relative flex flex-col p-4 bg-white/5 rounded-3xl border border-white/5 hover:border-blue-500/50 transition-all hover:bg-white/10 hover:-translate-y-1 shadow-xl text-left"
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 shrink-0 bg-black/40 rounded-2xl overflow-hidden flex items-center justify-center p-2 border border-white/5 shadow-inner">
-                      <img 
-                        src={channel.logo} 
-                        alt={channel.name} 
-                        className="w-full h-full object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
-                        onError={(e) => (e.currentTarget.src = 'https://raw.githubusercontent.com/TDTChannels/TDTChannels/main/tdtchannels.png')}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-grow">
-                      <p className="text-sm font-black text-white group-hover:text-blue-400 truncate uppercase tracking-tighter transition-colors">
-                        {channel.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        {channel.isWeb && <span className="text-[8px] bg-white/10 text-white/40 px-1 rounded uppercase">Web</span>}
-                        {current && (
-                          <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
-                            {t('now', lang)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {current ? (
-                      <div className="min-h-[40px]">
-                        <p className="text-xs font-bold text-white/80 line-clamp-2 leading-snug">
-                          {current.name}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex-grow h-1 bg-white/10 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${Math.min(100, Math.max(0, ((moment().valueOf() - current.start) / (current.end - current.start)) * 100))}%` }}
-                              className="h-full bg-blue-500"
-                            />
+              <AnimatePresence>
+                {(!filter || expandedAmbits.includes(ambit)) && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-hidden"
+                  >
+                    {groupedChannels[ambit].map((channel, index) => {
+                      const current = getCurrentProgram(channel);
+                      const next = getNextProgram(channel);
+                      
+                      return (
+                        <motion.button
+                          key={`${channel.url}-${index}`}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 0.005 }}
+                          onClick={() => setSelectedChannel(channel)}
+                          className="group relative flex flex-col p-4 bg-white/5 rounded-3xl border border-white/5 hover:border-blue-500/50 transition-all hover:bg-white/10 hover:-translate-y-1 shadow-xl text-left"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-16 h-16 shrink-0 bg-black/40 rounded-2xl overflow-hidden flex items-center justify-center p-2 border border-white/5 shadow-inner text-white">
+                              <img 
+                                src={channel.logo} 
+                                alt={channel.name} 
+                                className="w-full h-full object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
+                                onError={(e) => (e.currentTarget.src = 'https://raw.githubusercontent.com/TDTChannels/TDTChannels/main/tdtchannels.png')}
+                              />
+                            </div>
+                            <div className="min-w-0 flex-grow">
+                              <p className="text-sm font-black text-white group-hover:text-blue-400 truncate uppercase tracking-tighter transition-colors">
+                                {channel.name}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                {channel.isWeb && <span className="text-[8px] bg-white/10 text-white/40 px-1 rounded uppercase font-bold">Web</span>}
+                                {current && (
+                                  <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
+                                    {t('now', lang)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-[9px] text-white/30 font-mono">
-                            {moment(current.end).format('HH:mm')}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="h-[40px] flex items-center">
-                        <p className="text-[10px] text-white/20 italic font-medium">Sin información EPG</p>
-                      </div>
-                    )}
 
-                    {next && (
-                      <div className="pt-2 border-t border-white/5">
-                        <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">
-                          {t('next', lang)}: {moment(next.start).format('HH:mm')}
-                        </p>
-                        <p className="text-[10px] font-medium text-white/40 truncate">
-                          {next.name}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                          <div className="space-y-2">
+                            {current ? (
+                              <div className="min-h-[40px]">
+                                <p className="text-xs font-bold text-white/80 line-clamp-2 leading-snug">
+                                  {current.name}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="flex-grow h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <motion.div 
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${Math.min(100, Math.max(0, ((moment().valueOf() - current.start) / (current.end - current.start)) * 100))}%` }}
+                                      className="h-full bg-blue-500"
+                                    />
+                                  </div>
+                                  <span className="text-[9px] text-white/30 font-mono">
+                                    {moment(current.end).format('HH:mm')}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="h-[40px] flex items-center">
+                                <p className="text-[10px] text-white/20 italic font-medium">Sin información EPG</p>
+                              </div>
+                            )}
 
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-blue-500 rounded-full p-2 shadow-lg shadow-blue-500/40">
-                      <Play className="text-white ml-0.5" size={14} fill="currentColor" />
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
+                            {next && (
+                              <div className="pt-2 border-t border-white/5">
+                                <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">
+                                  {t('next', lang)}: {moment(next.start).format('HH:mm')}
+                                </p>
+                                <p className="text-[10px] font-medium text-white/40 truncate">
+                                  {next.name}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-white">
+                            <div className="bg-blue-500 rounded-full p-2 shadow-lg shadow-blue-500/40">
+                              <Play className="text-white ml-0.5" size={14} fill="currentColor" />
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))
         )}
 
         {!loading && filteredChannels.length === 0 && (
-          <div className="text-center py-20 opacity-40">
+          <div className="text-center py-20 opacity-40 text-white">
             <Tv size={64} className="mx-auto mb-4" />
             <p className="text-xl font-bold">{t('noChannels', lang)}</p>
           </div>
@@ -215,11 +271,26 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
             exit={{ opacity: 0, scale: 1.05 }}
             className="fixed inset-0 z-[70] bg-black flex flex-col"
           >
+            {/* Spinner de Carga */}
+            <AnimatePresence>
+              {isBuffering && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm"
+                >
+                  <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
+                  <p className="text-white font-black uppercase tracking-widest text-xs">Cargando emisión...</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Player Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
+            <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
               <div className="flex items-center gap-4">
                 <button 
-                  onClick={() => { setSelectedChannel(null); setShowSchedule(false); }}
+                  onClick={() => { setSelectedChannel(null); setShowSchedule(false); setIsBuffering(false); }}
                   className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all backdrop-blur-md border border-white/10"
                 >
                   <X size={24} className="text-white" />
@@ -253,6 +324,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                   className="w-full h-full border-0"
                   allow="autoplay; fullscreen; picture-in-picture"
                   sandbox="allow-forms allow-scripts allow-same-origin allow-popups"
+                  onLoad={() => setIsBuffering(false)}
                 />
               ) : (
                 <video 
@@ -260,6 +332,9 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                   controls
                   className="w-full h-full object-contain"
                   autoPlay
+                  onPlaying={() => setIsBuffering(false)}
+                  onWaiting={() => setIsBuffering(true)}
+                  onCanPlay={() => setIsBuffering(false)}
                 />
               )}
 
@@ -270,7 +345,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                     initial={{ x: 320 }}
                     animate={{ x: 0 }}
                     exit={{ x: 320 }}
-                    className="absolute top-24 right-6 bottom-6 w-80 bg-slate-950/80 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]"
+                    className="absolute top-24 right-6 bottom-6 w-80 bg-slate-950/80 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] z-40"
                   >
                     <div className="p-6 border-b border-white/10 flex items-center justify-between">
                       <h3 className="text-sm font-black text-white uppercase tracking-widest">{t('schedule', lang)}</h3>
@@ -284,6 +359,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                         return (
                           <div 
                             key={idx} 
+                            ref={isNow ? currentProgramRef : null}
                             className={`p-4 rounded-2xl border transition-all ${isNow ? 'bg-blue-500/20 border-blue-500/50 shadow-lg shadow-blue-500/5' : 'bg-white/5 border-white/5'} ${isPast ? 'opacity-30 grayscale' : ''}`}
                           >
                             <div className="flex justify-between items-start mb-1">

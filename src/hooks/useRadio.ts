@@ -6,6 +6,7 @@ export interface RadioChannel {
   name: string;
   logo: string;
   url: string;
+  ambit: string; // Categoría/Ámbito
   epg_id?: string;
   epg?: TVProgram[];
 }
@@ -27,37 +28,46 @@ export const useRadio = () => {
         
         const flatChannels: RadioChannel[] = [];
         
-        data.countries.forEach((country: any) => {
-          country.ambits.forEach((ambit: any) => {
-            ambit.channels.forEach((channel: any) => {
-              const m3u8Option = channel.options.find((opt: any) => 
-                opt.format === 'm3u8' || opt.url.endsWith('.m3u8') || opt.format === 'aac' || opt.format === 'mp3'
-              );
-              
-              if (m3u8Option) {
-                const channelEpgEntry = Array.isArray(epgData) 
-                  ? epgData.find((e: any) => e.name === channel.epg_id) 
-                  : null;
+        if (data.countries) {
+          data.countries.forEach((country: any) => {
+            if (country.ambits) {
+              country.ambits.forEach((ambit: any) => {
+                const ambitName = ambit.name || ambit.ambit || 'General'; // Fallback
+                
+                if (ambit.channels) {
+                  ambit.channels.forEach((channel: any) => {
+                    const m3u8Option = channel.options.find((opt: any) => 
+                      opt.format === 'm3u8' || opt.url.endsWith('.m3u8') || opt.format === 'aac' || opt.format === 'mp3'
+                    );
+                    
+                    if (m3u8Option) {
+                      const channelEpgEntry = Array.isArray(epgData) 
+                        ? epgData.find((e: any) => e.name === channel.epg_id) 
+                        : null;
 
-                const events = channelEpgEntry?.events || [];
+                      const events = channelEpgEntry?.events || [];
 
-                flatChannels.push({
-                  id: channel.name,
-                  name: channel.name,
-                  logo: channel.logo,
-                  url: m3u8Option.url,
-                  epg_id: channel.epg_id,
-                  epg: events.map((p: any) => ({
-                    name: p.t,
-                    description: p.d,
-                    start: p.hi * 1000,
-                    end: p.hf * 1000
-                  }))
-                });
-              }
-            });
+                      flatChannels.push({
+                        id: channel.name,
+                        name: channel.name,
+                        logo: channel.logo,
+                        url: m3u8Option.url,
+                        ambit: ambitName,
+                        epg_id: channel.epg_id,
+                        epg: events.map((p: any) => ({
+                          name: p.t,
+                          description: p.d,
+                          start: p.hi * 1000,
+                          end: p.hf * 1000
+                        }))
+                      });
+                    }
+                  });
+                }
+              });
+            }
           });
-        });
+        }
         
         setChannels(flatChannels);
       } catch (error) {
