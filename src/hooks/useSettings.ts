@@ -25,6 +25,7 @@ export interface Settings {
   searchEngineId: string;
   customSearchEngines: SearchEngine[];
   language: Language;
+  showDefaultBookmarks: boolean;
 }
 
 const defaultBackgrounds: BackgroundImage[] = [
@@ -50,7 +51,8 @@ const defaultSettings: Settings = {
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   searchEngineId: 'google',
   customSearchEngines: defaultSearchEngines,
-  language: 'es'
+  language: 'es',
+  showDefaultBookmarks: true
 };
 
 export const useSettings = () => {

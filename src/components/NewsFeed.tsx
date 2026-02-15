@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ExternalLink, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { NewsItem } from '../utils/rssParser';
 import { t } from '../utils/i18n';
 import type { Language } from '../utils/i18n';
@@ -50,8 +51,12 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({ news, loading, onRefresh, on
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {news.map((item, index) => (
-          <article 
+          <motion.article 
             key={`${item.link}-${index}`} 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
             className="group bg-slate-900/40 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 flex flex-col shadow-2xl"
           >
             {item.imageUrl && (
@@ -90,7 +95,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({ news, loading, onRefresh, on
                 {t('readMore', lang)} <ExternalLink size={14} />
               </a>
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
       

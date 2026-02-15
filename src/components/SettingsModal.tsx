@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Image as ImageIcon, Search, Rss, Trash2, Bookmark as BookmarkIcon, Languages } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Settings } from '../hooks/useSettings';
 import type { NewsSource } from '../hooks/useNewsFeed';
 import type { Bookmark, Folder as FolderType } from '../hooks/useBookmarks';
@@ -44,8 +45,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const lang = settings.language;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="bg-slate-950/60 backdrop-blur-2xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] flex flex-col">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 10 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="bg-slate-950/60 backdrop-blur-2xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] flex flex-col"
+      >
         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
           <h2 className="text-xl font-bold tracking-tight">{t('settings', lang)}</h2>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-all">
@@ -55,7 +67,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div className="p-6 overflow-y-auto flex-grow space-y-8 custom-scrollbar bg-black/20">
           {/* Idioma */}
-          <section>
+          <motion.section 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.1 }}
+          >
             <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
               <Languages size={18} /> {t('language', lang)}
             </h3>
@@ -70,13 +86,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
-          </section>
+          </motion.section>
 
           {/* Gestión de Marcadores */}
-          <section>
-            <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
-              <BookmarkIcon size={18} /> {t('bookmarks', lang)}
-            </h3>
+          <motion.section 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="flex items-center gap-2 font-bold text-blue-400 text-sm uppercase tracking-widest">
+                <BookmarkIcon size={18} /> {t('bookmarks', lang)}
+              </h3>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('showDefaultBookmarks', lang)}</span>
+                <button 
+                  onClick={() => onUpdate({ showDefaultBookmarks: !settings.showDefaultBookmarks })}
+                  className={`w-10 h-5 rounded-full transition-all relative ${settings.showDefaultBookmarks ? 'bg-blue-500' : 'bg-white/10'}`}
+                >
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${settings.showDefaultBookmarks ? 'right-0.5' : 'left-0.5'}`} />
+                </button>
+              </div>
+            </div>
             <BookmarkManager 
               bookmarks={bookmarks}
               folders={folders}
@@ -88,18 +119,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onUpdateFolder={onUpdateFolder}
               lang={lang}
             />
-          </section>
+          </motion.section>
 
           {/* Fondos */}
-          <section>
+          <motion.section 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.3 }}
+          >
             <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
               <ImageIcon size={18} /> {t('backgrounds', lang)}
             </h3>
             
             <div className="grid grid-cols-3 gap-3 mb-6">
-              {settings.backgrounds.map(bg => (
-                <div 
+              {settings.backgrounds.map((bg, idx) => (
+                <motion.div 
                   key={bg.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + (idx * 0.05) }}
                   onClick={() => onUpdate({ currentBackgroundId: bg.id })}
                   className={`relative aspect-video rounded-2xl overflow-hidden cursor-pointer border-2 transition-all group ${settings.currentBackgroundId === bg.id ? 'border-blue-500 ring-4 ring-blue-500/20' : 'border-white/5 hover:border-white/20'}`}
                 >
@@ -122,11 +160,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       <div className="bg-blue-500 rounded-full p-1 shadow-lg"><X className="rotate-45 text-white" size={12} /></div>
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
             </div>
 
-            <div className="space-y-4 bg-white/5 p-5 rounded-2xl border border-white/5 shadow-inner">
+            <div className="space-y-4 bg-white/5 p-5 rounded-2xl border border-white/5 shadow-inner text-white">
               <div>
                 <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('addByUrl', lang)}</label>
                 <div className="flex gap-2">
@@ -184,7 +222,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </button>
                 </div>
                 {settings.autoRotate && (
-                  <div className="flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    className="flex items-center justify-between overflow-hidden"
+                  >
                     <span className="text-xs text-white/40 font-bold uppercase tracking-widest">{t('interval', lang)}</span>
                     <input 
                       type="number" 
@@ -193,14 +235,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       onChange={(e) => onUpdate({ rotationInterval: parseInt(e.target.value) || 1 })}
                       className="w-20 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-blue-500 text-white text-center transition-all"
                     />
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Motores de Búsqueda */}
-          <section>
+          <motion.section 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.4 }}
+          >
             <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
               <Search size={18} /> {t('searchEngines', lang)}
             </h3>
@@ -268,10 +314,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {t('save', lang)}
               </button>
             </div>
-          </section>
+          </motion.section>
 
           {/* Noticias */}
-          <section>
+          <motion.section 
+            initial={{ opacity: 0, x: -10 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.5 }}
+          >
             <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
               <Rss size={18} /> {t('rssSources', lang)}
             </h3>
@@ -331,9 +381,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {t('save', lang)}
               </button>
             </div>
-          </section>
+          </motion.section>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

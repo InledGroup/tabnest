@@ -29,6 +29,7 @@ export const translations = {
     noNews: 'No hay noticias disponibles. Añade fuentes RSS en la configuración.',
     empty: 'Vacío',
     language: 'Idioma',
+    showDefaultBookmarks: 'Mostrar marcadores predeterminados',
     root: 'Raíz',
     addHere: 'Añadir aquí',
     delete: 'Eliminar',
@@ -42,7 +43,10 @@ export const translations = {
     close: 'Cerrar',
     now: 'Ahora',
     next: 'A continuación',
-    schedule: 'Programación'
+    schedule: 'Programación',
+    disclaimer: 'Aviso Legal',
+    privacy: 'Privacidad',
+    terms: 'Términos'
   },
   en: {
     settings: 'Settings',
@@ -72,6 +76,7 @@ export const translations = {
     noNews: 'No news available. Add RSS sources in settings.',
     empty: 'Empty',
     language: 'Language',
+    showDefaultBookmarks: 'Show default bookmarks',
     root: 'Root',
     addHere: 'Add here',
     delete: 'Delete',
@@ -85,7 +90,10 @@ export const translations = {
     close: 'Close',
     now: 'Now',
     next: 'Next',
-    schedule: 'Schedule'
+    schedule: 'Schedule',
+    disclaimer: 'Disclaimer',
+    privacy: 'Privacy',
+    terms: 'Terms'
   }
 };
 

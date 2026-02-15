@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { X, Radio, Search, Play, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { t } from '../utils/i18n';
 import type { Language } from '../utils/i18n';
 import type { RadioChannel } from '../hooks/useRadio';
@@ -75,7 +76,12 @@ export const RadioTuner: React.FC<RadioTunerProps> = ({ channels, loading, onClo
   }, [selectedChannel]);
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-2xl flex flex-col animate-in fade-in duration-300">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-2xl flex flex-col"
+    >
       {/* Header */}
       <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
         <div className="flex items-center gap-4">
@@ -122,8 +128,11 @@ export const RadioTuner: React.FC<RadioTunerProps> = ({ channels, loading, onClo
               const next = getNextProgram(channel);
               
               return (
-                <button
+                <motion.button
                   key={`${channel.url}-${index}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.01 }}
                   onClick={() => setSelectedChannel(channel)}
                   className={`group relative flex flex-col p-4 rounded-3xl border transition-all hover:-translate-y-1 shadow-xl text-left ${selectedChannel?.id === channel.id ? 'bg-purple-500/20 border-purple-500/50 shadow-purple-500/10' : 'bg-white/5 border-white/5 hover:border-purple-500/30 hover:bg-white/10'}`}
                 >
@@ -165,13 +174,10 @@ export const RadioTuner: React.FC<RadioTunerProps> = ({ channels, loading, onClo
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-grow h-1 bg-white/10 rounded-full overflow-hidden">
-                            <div 
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.min(100, Math.max(0, ((moment().valueOf() - current.start) / (current.end - current.start)) * 100))}%` }}
                               className="h-full bg-purple-500"
-                              style={{ 
-                                width: `${Math.min(100, Math.max(0, 
-                                  ((moment().valueOf() - current.start) / (current.end - current.start)) * 100
-                                ))}%` 
-                              }}
                             />
                           </div>
                           <span className="text-[9px] text-white/30 font-mono">
@@ -198,11 +204,11 @@ export const RadioTuner: React.FC<RadioTunerProps> = ({ channels, loading, onClo
                   </div>
 
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-purple-500 rounded-full p-2 shadow-lg shadow-purple-500/40">
+                    <div className="bg-purple-500 rounded-full p-2 shadow-lg shadow-blue-500/40">
                       <Play className="text-white ml-0.5" size={14} fill="currentColor" />
                     </div>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -210,78 +216,92 @@ export const RadioTuner: React.FC<RadioTunerProps> = ({ channels, loading, onClo
       </div>
 
       {/* Mini Player Overlay */}
-      {selectedChannel && (
-        <div className="p-6 bg-slate-950/80 backdrop-blur-3xl border-t border-white/10 animate-in slide-in-from-bottom duration-500 flex items-center justify-between gap-8">
-          <div className="flex items-center gap-6 flex-grow max-w-2xl">
-            <div className="w-20 h-20 bg-black/40 rounded-3xl overflow-hidden flex items-center justify-center p-3 border border-white/5 shadow-2xl shrink-0">
-              <img src={selectedChannel.logo} alt="" className="w-full h-full object-contain" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-3 mb-1">
-                <h3 className="text-xl font-black text-white uppercase tracking-tighter truncate">{selectedChannel.name}</h3>
-                <span className="bg-purple-500 text-[10px] font-black px-2 py-0.5 rounded-full text-white uppercase tracking-widest shadow-lg shadow-purple-500/20">On Air</span>
+      <AnimatePresence>
+        {selectedChannel && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="p-6 bg-slate-950/80 backdrop-blur-3xl border-t border-white/10 flex items-center justify-between gap-8 relative"
+          >
+            <div className="flex items-center gap-6 flex-grow max-w-2xl text-white">
+              <div className="w-20 h-20 bg-black/40 rounded-3xl overflow-hidden flex items-center justify-center p-3 border border-white/5 shadow-2xl shrink-0">
+                <img src={selectedChannel.logo} alt="" className="w-full h-full object-contain" />
               </div>
-              {getCurrentProgram(selectedChannel) ? (
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-purple-400 truncate">{getCurrentProgram(selectedChannel)?.name}</p>
-                  <p className="text-xs text-white/40 line-clamp-1">{getCurrentProgram(selectedChannel)?.description}</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="text-xl font-black text-white uppercase tracking-tighter truncate">{selectedChannel.name}</h3>
+                  <span className="bg-purple-500 text-[10px] font-black px-2 py-0.5 rounded-full text-white uppercase tracking-widest shadow-lg shadow-purple-500/20">On Air</span>
                 </div>
-              ) : (
-                <p className="text-sm font-bold text-white/40 italic">Emisión en directo</p>
+                {getCurrentProgram(selectedChannel) ? (
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-purple-400 truncate">{getCurrentProgram(selectedChannel)?.name}</p>
+                    <p className="text-xs text-white/40 line-clamp-1">{getCurrentProgram(selectedChannel)?.description}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm font-bold text-white/40 italic">Emisión en directo</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <audio ref={audioRef} controls className="hidden" />
+              
+              <button 
+                onClick={() => setShowSchedule(!showSchedule)}
+                className={`p-4 rounded-2xl transition-all border flex items-center gap-2 font-bold uppercase tracking-widest text-xs ${showSchedule ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/40' : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'}`}
+              >
+                <Calendar size={20} />
+                {t('schedule', lang)}
+              </button>
+
+              <button 
+                onClick={() => setSelectedChannel(null)}
+                className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-400 rounded-2xl transition-all border border-white/10 text-white/40 group"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Mini EPG Sidebar */}
+            <AnimatePresence>
+              {showSchedule && selectedChannel.epg && selectedChannel.epg.length > 0 && (
+                <motion.div 
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 50, opacity: 0 }}
+                  className="absolute bottom-32 right-6 w-80 max-h-[60vh] bg-slate-950/90 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]"
+                >
+                  <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                    <h3 className="text-sm font-black text-white uppercase tracking-widest">{t('schedule', lang)}</h3>
+                    <button onClick={() => setShowSchedule(false)} className="text-white/40 hover:text-white"><X size={18} /></button>
+                  </div>
+                  <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                    {selectedChannel.epg.map((program, idx) => {
+                      const isNow = moment().valueOf() >= program.start && moment().valueOf() < program.end;
+                      const isPast = moment().valueOf() >= program.end;
+                      
+                      return (
+                        <div 
+                          key={idx} 
+                          className={`p-4 rounded-2xl border transition-all ${isNow ? 'bg-purple-500/20 border-purple-500/50 shadow-lg shadow-blue-500/5' : 'bg-white/5 border-white/5'} ${isPast ? 'opacity-30 grayscale' : ''}`}
+                        >
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-[10px] font-black text-purple-400 tracking-tighter">
+                              {moment(program.start).format('HH:mm')} - {moment(program.end).format('HH:mm')}
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold text-white leading-tight">{program.name}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
               )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <audio ref={audioRef} controls className="hidden" />
-            
-            <button 
-              onClick={() => setShowSchedule(!showSchedule)}
-              className={`p-4 rounded-2xl transition-all border flex items-center gap-2 font-bold uppercase tracking-widest text-xs ${showSchedule ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/40' : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'}`}
-            >
-              <Calendar size={20} />
-              {t('schedule', lang)}
-            </button>
-
-            <button 
-              onClick={() => setSelectedChannel(null)}
-              className="p-4 bg-white/5 hover:bg-red-500/20 hover:text-red-400 rounded-2xl transition-all border border-white/10 text-white/40 group"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          {/* Mini EPG Sidebar */}
-          {showSchedule && selectedChannel.epg && selectedChannel.epg.length > 0 && (
-            <div className="absolute bottom-32 right-6 w-80 max-h-[60vh] bg-slate-950/90 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-4 duration-300">
-              <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">{t('schedule', lang)}</h3>
-                <button onClick={() => setShowSchedule(false)} className="text-white/40 hover:text-white"><X size={18} /></button>
-              </div>
-              <div className="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                {selectedChannel.epg.map((program, idx) => {
-                  const isNow = moment().valueOf() >= program.start && moment().valueOf() < program.end;
-                  const isPast = moment().valueOf() >= program.end;
-                  
-                  return (
-                    <div 
-                      key={idx} 
-                      className={`p-4 rounded-2xl border transition-all ${isNow ? 'bg-purple-500/20 border-purple-500/50 shadow-lg shadow-purple-500/5' : 'bg-white/5 border-white/5'} ${isPast ? 'opacity-30 grayscale' : ''}`}
-                    >
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="text-[10px] font-black text-purple-400 tracking-tighter">
-                          {moment(program.start).format('HH:mm')} - {moment(program.end).format('HH:mm')}
-                        </span>
-                      </div>
-                      <p className="text-xs font-bold text-white leading-tight">{program.name}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };

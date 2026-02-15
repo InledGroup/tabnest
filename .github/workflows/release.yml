@@ -1,0 +1,55 @@
+name: Release Extension
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create Zip Archive
+        run: |
+          cd dist
+          zip -r ../tabnest-extension.zip .
+          cd ..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: TabNest Build ${{ github.run_number }}
+          files: tabnest-extension.zip
+          body: |
+            Automatized build from commit ${{ github.sha }}
+            
+            To install this extension:
+            1. Download `tabnest-extension.zip`
+            2. Unzip it.
+            3. Go to `chrome://extensions` in your browser.
+            4. Enable "Developer mode".
+            5. Click "Load unpacked" and select the unzipped folder.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

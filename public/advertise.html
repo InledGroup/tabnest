@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TabNest - Tu Nueva Pestaña Definitiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --microsoft-blue: #0078d4;
+            --surface-glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .fluent-bg {
+            background: radial-gradient(circle at 0% 0%, #1a1a1a 0%, #050505 100%);
+        }
+
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--microsoft-blue), #50e6ff);
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .glass-card {
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.7);
+        }
+
+        /* 3D Microsoft Style Button */
+        .btn-3d {
+            background: linear-gradient(180deg, #40a0ff 0%, #0078d4 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 
+                0 4px 0 0 #005a9e,
+                0 8px 15px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border-radius: 12px;
+            transition: all 0.1s ease;
+            position: relative;
+            top: 0;
+        }
+
+        .btn-3d:active {
+            top: 3px;
+            box-shadow: 
+                0 1px 0 0 #005a9e,
+                0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating { animation: float 6s ease-in-out infinite; }
+
+        .text-gradient {
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #demo-modal {
+            display: none;
+        }
+    </style>
+</head>
+<body class="fluent-bg">
+    <div class="blob" style="top: -100px; left: -100px;"></div>
+    <div class="blob" style="bottom: -100px; right: -100px; background: #8b5cf6;"></div>
+
+    <nav class="relative z-10 px-8 py-6 flex justify-between items-center max-w-7xl mx-auto">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 flex items-center justify-center ">
+                <img src="tabnest.png" alt="TabNest" class="w-8 h-8">
+            </div>
+            <span class="text-xl font-black uppercase tracking-tighter">TabNest</span>
+        </div>
+        <div class="flex gap-6">
+            <a href="#features" class="text-sm font-bold text-white/50 hover:text-white transition-colors">Características</a>
+            <a href="https://inled.es" class="text-sm font-bold text-white/50 hover:text-white transition-colors">Volver a inled.es</a>
+        </div>
+    </nav>
+
+    <main class="relative z-10">
+        <!-- Hero Section -->
+        <section class="px-8 py-24 md:py-32 flex flex-col items-center text-center max-w-5xl mx-auto">
+            <span class="px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-xs font-black uppercase tracking-widest mb-8">Extensión para Chrome / Edge / Firefox</span>
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 text-gradient">
+                Transforma cada<br/>nueva pestaña.
+            </h1>
+            <p class="text-xl text-white/60 mb-12 max-w-2xl leading-relaxed">
+                TabNest no es solo un inicio; es tu centro de control personal. TV en vivo, radio, noticias en tiempo real y todos tus marcadores bajo una estética de cristal profesional.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6">
+                <button class="btn-3d px-10 py-4 text-lg font-bold flex items-center gap-3">
+                    <i data-lucide="download"></i> Instalar Extensión
+                </button>
+                <button class="px-10 py-4 text-lg font-bold glass-card border border-white/10 hover:bg-white/5 transition-all" onclick="openDemoModal()">
+                    Ver Demo
+                </button>
+            </div>
+        </section>
+
+        <!-- Preview Image -->
+        <section class="px-8 pb-32">
+            <div class="max-w-6xl mx-auto glass-card p-2 floating">
+                <div class="rounded-[20px] overflow-hidden border border-white/10 bg-slate-900 aspect-video flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070')] bg-cover bg-center opacity-50"></div>
+                    <div class="relative z-10 text-center">
+                        <div class="text-7xl font-light mb-4">12:45</div>
+                        <div class="text-sm font-bold uppercase tracking-widest text-white/40">Lunes, 15 de Febrero</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section id="features" class="px-8 py-32 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- TV -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="tv" class="text-blue-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">TV en Directo</h3>
+                    <p class="text-white/50 leading-relaxed">Accede a cientos de canales de TDT directamente desde tu pestaña. Con guía de programación (EPG) en tiempo real integrada.</p>
+                </div>
+
+                <!-- Radio -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="radio" class="text-purple-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">Radio Online</h3>
+                    <p class="text-white/50 leading-relaxed">Tus emisoras favoritas siempre a un clic. Reproductor de audio inteligente que te permite escuchar mientras navegas.</p>
+                </div>
+
+                <!-- News -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="newspaper" class="text-orange-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">Feed de Noticias</h3>
+                    <p class="text-white/50 leading-relaxed">Scroll infinito con las últimas noticias de los principales medios. Totalmente personalizable con tus fuentes RSS.</p>
+                </div>
+
+                <!-- Bookmarks -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="folder-kanban" class="text-green-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">Super Marcadores</h3>
+                    <p class="text-white/50 leading-relaxed">Organiza tu web con carpetas de colores y emojis. Incluye una biblioteca predeterminada con más de 60 herramientas esenciales.</p>
+                </div>
+
+                <!-- Personalization -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="palette" class="text-pink-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">Diseño Fluent</h3>
+                    <p class="text-white/50 leading-relaxed">Fondos dinámicos, rotación automática y efectos de transparencia. Haz que tu navegador sea una obra de arte.</p>
+                </div>
+
+                <!-- Privacy -->
+                <div class="glass-card p-8 flex flex-col gap-6">
+                    <div class="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center">
+                        <i data-lucide="shield-check" class="text-emerald-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold tracking-tight">100% Privado</h3>
+                    <p class="text-white/50 leading-relaxed">Sin servidores externos. Tus datos se guardan localmente en tu navegador. Tu privacidad no es negociable.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats / Proof -->
+        <section class="px-8 py-32 border-t border-white/5 bg-white/[0.02]">
+            <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                <div>
+                    <div class="text-5xl font-black mb-2">100+</div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-white/30">Marcadores Ready</div>
+                </div>
+                <div>
+                    <div class="text-5xl font-black mb-2">400+</div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-white/30">Canales de TV</div>
+                </div>
+                <div>
+                    <div class="text-5xl font-black mb-2">200+</div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-white/30">Emisoras de Radio</div>
+                </div>
+                <div>
+                    <div class="text-5xl font-black mb-2">10+</div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-white/30">Periódicos</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="px-8 py-24 flex flex-col items-center gap-8 border-t border-white/5">
+            <div class="flex items-center gap-2 opacity-50">
+                <div class="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+                    <img src="tabnest.png" alt="TabNest" class="w-8 h-8">
+                </div>
+                <span class="text-sm font-black uppercase tracking-widest">TabNest</span>
+            </div>
+            <p class="text-white/30 text-xs">Desarrollado para la comunidad. Datos de TV por TDTChannels.</p>
+            <div class="flex gap-8">
+                <a href="#" class="text-xs font-bold text-white/20 hover:text-white transition-colors">GitHub</a>
+                <a href="https://inled.es" class="text-xs font-bold text-white/20 hover:text-white transition-colors">inled.es</a>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Demo Warning Modal -->
+    <div id="demo-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass-card max-w-lg w-full p-8 md:p-10 border border-white/20 shadow-2xl animate-in zoom-in duration-300">
+            <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30">
+                <i data-lucide="alert-triangle" class="text-blue-400" size={32}></i>
+            </div>
+            <h2 class="text-3xl font-black tracking-tighter mb-4 uppercase">Aviso de la Demo</h2>
+            <p class="text-white/60 mb-8 leading-relaxed">
+                Estás a punto de acceder a la versión web de TabNest. Ten en cuenta que, al no estar ejecutándose como una extensión instalada, algunas funcionalidades críticas pueden fallar:
+            </p>
+            <ul class="space-y-3 mb-8">
+                <li class="flex items-start gap-3 text-sm text-white/80">
+                    <i data-lucide="x-circle" class="text-red-400 shrink-0" size={18}></i>
+                    <span>Ciertos canales de TV no podrán cargar debido a restricciones de seguridad (CORS/Framing) que solo la extensión puede saltarse.</span>
+                </li>
+                <li class="flex items-start gap-3 text-sm text-white/80">
+                    <i data-lucide="x-circle" class="text-red-400 shrink-0" size={18}></i>
+                    <span>La carga de algunos feeds de noticias podría verse bloqueada por los servidores de origen.</span>
+                </li>
+                <li class="flex items-start gap-3 text-sm text-white/80">
+                    <i data-lucide="info" class="text-blue-400 shrink-0" size={18}></i>
+                    <span>Para una experiencia fluida y completa, te recomendamos instalar la extensión.</span>
+                </li>
+            </ul>
+            <div class="flex flex-col gap-3">
+                <button class="btn-3d w-full py-4 text-sm font-bold uppercase tracking-widest" onclick="window.open('demo.html', '_blank'); closeDemoModal();">
+                    Entendido, ver demo
+                </button>
+                <button class="w-full py-4 text-xs font-bold text-white/30 hover:text-white transition-colors uppercase tracking-widest" onclick="closeDemoModal()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function openDemoModal() {
+            document.getElementById('demo-modal').style.display = 'flex';
+        }
+
+        function closeDemoModal() {
+            document.getElementById('demo-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

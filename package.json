@@ -16,6 +16,7 @@
     "moment-timezone": "^0.6.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {

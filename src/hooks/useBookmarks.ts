@@ -11,30 +11,25 @@ export interface Bookmark {
 export interface Folder {
   id: string;
   title: string;
-  isOpen: boolean;
+  isOpen?: boolean; // Mantenemos por compatibilidad, pero usaremos expandedFolderIds
   color?: string;
   emoji?: string;
 }
 
 const defaultFolders: Folder[] = [
-  { id: '1', title: 'Work', isOpen: false, color: '#3b82f6', emoji: '💼' },
-  { id: '2', title: 'Social', isOpen: false, color: '#ec4899', emoji: '🌟' }
-];
-
-const defaultBookmarks: Bookmark[] = [
-  { id: 'b1', title: 'GitHub', url: 'https://github.com', parentId: '1' },
-  { id: 'b2', title: 'Stack Overflow', url: 'https://stackoverflow.com', parentId: '1' },
-  { id: 'b3', title: 'Twitter', url: 'https://twitter.com', parentId: '2' },
-  { id: 'b4', title: 'YouTube', url: 'https://youtube.com' }
+  { id: '1', title: 'Work', color: '#3b82f6', emoji: '💼' },
+  { id: '2', title: 'Social', color: '#ec4899', emoji: '🌟' }
 ];
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [expandedFolderIds, setExpandedFolderIds] = useState<string[]>([]);
 
   useEffect(() => {
-    getStorage<Bookmark[]>('bookmarks', defaultBookmarks).then(setBookmarks);
+    getStorage<Bookmark[]>('bookmarks', []).then(setBookmarks);
     getStorage<Folder[]>('folders', defaultFolders).then(setFolders);
+    getStorage<string[]>('expandedFolderIds', []).then(setExpandedFolderIds);
   }, []);
 
   const addBookmark = async (bookmark: Omit<Bookmark, 'id'>) => {
@@ -45,7 +40,7 @@ export const useBookmarks = () => {
   };
 
   const addFolder = async (title: string, color?: string, emoji?: string) => {
-    const newFolder = { id: crypto.randomUUID(), title, isOpen: false, color, emoji };
+    const newFolder = { id: crypto.randomUUID(), title, color, emoji };
     const updated = [...folders, newFolder];
     setFolders(updated);
     await setStorage('folders', updated);
@@ -58,9 +53,13 @@ export const useBookmarks = () => {
   };
 
   const toggleFolder = async (id: string) => {
-    const updated = folders.map(f => f.id === id ? { ...f, isOpen: !f.isOpen } : f);
-    setFolders(updated);
-    await setStorage('folders', updated);
+    const isExpanded = expandedFolderIds.includes(id);
+    const updatedIds = isExpanded 
+      ? expandedFolderIds.filter(fid => fid !== id)
+      : [...expandedFolderIds, id];
+    
+    setExpandedFolderIds(updatedIds);
+    await setStorage('expandedFolderIds', updatedIds);
   };
 
   const deleteBookmark = async (id: string) => {
@@ -86,5 +85,16 @@ export const useBookmarks = () => {
     await setStorage('bookmarks', updated);
   };
 
-  return { bookmarks, folders, addBookmark, addFolder, updateFolder, toggleFolder, deleteBookmark, deleteFolder, moveBookmark };
+  return { 
+    bookmarks, 
+    folders, 
+    expandedFolderIds,
+    addBookmark, 
+    addFolder, 
+    updateFolder, 
+    toggleFolder, 
+    deleteBookmark, 
+    deleteFolder, 
+    moveBookmark 
+  };
 };

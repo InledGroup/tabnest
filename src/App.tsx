@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
-import { Settings as SettingsIcon, Tv, Radio } from 'lucide-react';
+import { Settings as SettingsIcon, Tv, Radio, ChevronUp, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SearchBar } from './components/SearchBar';
 import { BookmarkTree } from './components/BookmarkTree';
@@ -8,17 +8,21 @@ import { NewsFeed } from './components/NewsFeed';
 import { SettingsModal } from './components/SettingsModal';
 import { TVTuner } from './components/TVTuner';
 import { RadioTuner } from './components/RadioTuner';
+import { LegalViewer } from './components/LegalViewer';
 import { useSettings } from './hooks/useSettings';
 import { useNewsFeed } from './hooks/useNewsFeed';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useTV } from './hooks/useTV';
 import { useRadio } from './hooks/useRadio';
+import { t } from './utils/i18n';
+import { DEFAULT_BOOKMARKS, DEFAULT_FOLDERS } from './utils/defaultBookmarks';
 
 function App() {
   const { settings, updateSettings, loading: settingsLoading } = useSettings();
   const { 
     bookmarks, 
     folders, 
+    expandedFolderIds,
     toggleFolder, 
     addBookmark, 
     addFolder,
@@ -45,6 +49,25 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showTV, setShowTV] = useState(false);
   const [showRadio, setShowRadio] = useState(false);
+  const [legalView, setLegalView] = useState<'disclaimer' | 'privacy' | 'terms' | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Control de scroll para botón "Subir"
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+  };
 
   // Idioma de Moment
   useEffect(() => {
@@ -84,6 +107,15 @@ function App() {
   const currentBackground = settings.backgrounds.find(bg => bg.id === settings.currentBackgroundId) || settings.backgrounds[0];
   const lang = settings.language;
 
+  // Combinar marcadores si está activo
+  const effectiveBookmarks = settings.showDefaultBookmarks 
+    ? [...DEFAULT_BOOKMARKS, ...bookmarks]
+    : bookmarks;
+  
+  const effectiveFolders = settings.showDefaultBookmarks
+    ? [...DEFAULT_FOLDERS, ...folders]
+    : folders;
+
   return (
     <div className="min-h-screen relative overflow-x-hidden">
       {/* Fondo Estático (Parallax) */}
@@ -101,7 +133,34 @@ function App() {
 
       {/* Contenido Scrolleable */}
       <div className="relative z-10 min-h-screen flex flex-col items-center p-8">
-        {/* Botones Flotantes */}
+        {/* Botones de Navegación Lateral (Izquierda) */}
+        <div className="fixed bottom-10 left-6 flex flex-col gap-3 z-40">
+          <AnimatePresence>
+            {showScrollTop && (
+              <motion.button 
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                onClick={scrollToTop}
+                className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-xl"
+                title="Subir"
+              >
+                <ChevronUp size={20} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+          <motion.button 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={scrollToBottom}
+            className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-xl"
+            title="Bajar al pie de página"
+          >
+            <ChevronDown size={20} />
+          </motion.button>
+        </div>
+
+        {/* Botones Flotantes (Derecha) */}
         <motion.div 
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -167,8 +226,9 @@ function App() {
           className="w-full mb-16"
         >
           <BookmarkTree 
-            bookmarks={bookmarks}
-            folders={folders}
+            bookmarks={effectiveBookmarks}
+            folders={effectiveFolders}
+            expandedFolderIds={expandedFolderIds}
             onToggleFolder={toggleFolder}
             lang={lang}
           />
@@ -190,6 +250,24 @@ function App() {
             lang={lang}
           />
         </motion.div>
+
+        {/* Footer Legal */}
+        <footer className="w-full max-w-6xl mx-auto py-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 opacity-40 hover:opacity-100 transition-opacity">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
+            TabNest © 2026 • {t('tv', lang)} Data by TDTChannels
+          </p>
+          <div className="flex items-center gap-8 text-white">
+            <button onClick={() => setLegalView('disclaimer')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+              {t('disclaimer', lang)}
+            </button>
+            <button onClick={() => setLegalView('privacy')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+              {t('privacy', lang)}
+            </button>
+            <button onClick={() => setLegalView('terms')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+              {t('terms', lang)}
+            </button>
+          </div>
+        </footer>
 
         {/* Modales con AnimatePresence */}
         <AnimatePresence>
@@ -231,6 +309,14 @@ function App() {
               loading={radioLoading}
               onClose={() => setShowRadio(false)}
               lang={lang}
+            />
+          )}
+
+          {legalView && (
+            <LegalViewer 
+              key="legal"
+              initialView={legalView}
+              onClose={() => setLegalView(null)}
             />
           )}
         </AnimatePresence>
