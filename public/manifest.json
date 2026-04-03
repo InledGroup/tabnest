@@ -20,13 +20,13 @@
   "content_scripts": [
     {
       "matches": ["*://*.mitele.es/*", "*://*.mediasetinfinity.es/*"],
-      "js": ["assets/miteleBypass.js"],
+      "js": ["assets/streamSync.js"],
       "run_at": "document_start",
       "all_frames": true
     },
     {
       "matches": ["*://*.mitele.es/*", "*://*.mediasetinfinity.es/*"],
-      "js": ["assets/miteleMainBypass.js"],
+      "js": ["assets/playerCore.js"],
       "run_at": "document_start",
       "all_frames": true,
       "world": "MAIN"
