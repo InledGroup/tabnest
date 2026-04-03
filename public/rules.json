@@ -14,5 +14,14 @@
       "urlFilter": "*",
       "resourceTypes": ["sub_frame"]
     }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": { "type": "allow" },
+    "condition": {
+      "urlFilter": "mitele.es",
+      "resourceTypes": ["main_frame", "sub_frame", "script"]
+    }
   }
 ]
