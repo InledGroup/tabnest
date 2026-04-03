@@ -27,18 +27,34 @@
                         if (instance.ads) instance.ads.skip();
                         a();
                     });
+
+                    // Bucle de aceleración extrema (cada 100ms)
+                    setInterval(() => {
+                        const v = document.querySelector('video');
+                        const ui = document.querySelector('.bitmovinplayer-ad-ui, .bitmovinplayer-ad-status-text');
+                        const isAd = (ui && ui.style.display !== 'none') || (instance.isAd && instance.isAd());
+                        
+                        if (v && isAd) {
+                            v.playbackRate = 16; // Máximo permitido por Chrome
+                            v.muted = true;
+                            // Salto forzado al final del clip de anuncio
+                            if (v.duration > 0 && v.currentTime < v.duration - 0.1) {
+                                v.currentTime = v.duration;
+                            }
+                            a();
+                        } else if (v && v.playbackRate > 1 && !isAd) {
+                            v.playbackRate = 1;
+                        }
+                    }, 100);
+
                     instance.on('timechanged', () => {
                         const v = document.querySelector('video');
                         const ui = document.querySelector('.bitmovinplayer-ad-ui');
                         const active = (ui && ui.style.display !== 'none') || (instance.isAd && instance.isAd());
-                        if (v) {
-                            if (active) {
-                                v.playbackRate = 16;
-                                v.muted = true;
-                                a();
-                            } else if (v.playbackRate > 1) {
-                                v.playbackRate = 1;
-                            }
+                        if (v && active) {
+                            v.playbackRate = 16;
+                            v.muted = true;
+                            a();
                         }
                     });
                     return instance;
@@ -55,7 +71,6 @@
         }), display: () => {} };
     };
 
-    // Esperar señal del script aislado (Opt-in)
     window.addEventListener('message', function listener(event) {
         if (event.data && event.data.type === 'TN_INIT_CORE') {
             window.removeEventListener('message', listener);

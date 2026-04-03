@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    chrome.storage.local.get(['settings'], (result) => {
+    chrome.storage.sync.get(['settings'], (result) => {
         if (!result.settings || result.settings.optimizeStreams !== true) {
             return; // Inactivo por defecto (Opt-in)
         }
