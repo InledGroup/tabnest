@@ -75,7 +75,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
               <Languages size={18} /> {t('language', lang)}
             </h3>
-            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl w-fit border border-white/5">
+            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl w-fit border border-white/5 mb-6">
               {(['es', 'en'] as const).map(l => (
                 <button
                   key={l}
@@ -85,6 +85,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   {l === 'es' ? 'Español' : 'English'}
                 </button>
               ))}
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+              <div>
+                <p className="text-sm font-bold text-white/80">{t('optimizeStreams', lang)}</p>
+                <p className="text-[10px] text-white/40 mt-1 max-w-sm">{t('optimizeStreamsDesc', lang)}</p>
+              </div>
+              <button 
+                onClick={() => onUpdate({ optimizeStreams: !settings.optimizeStreams })}
+                className={`w-12 h-6 rounded-full transition-all relative shrink-0 ${settings.optimizeStreams ? 'bg-blue-500 shadow-lg shadow-blue-500/30' : 'bg-white/10'}`}
+              >
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.optimizeStreams ? 'right-1' : 'left-1'}`} />
+              </button>
             </div>
           </motion.section>
 

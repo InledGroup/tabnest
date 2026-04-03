@@ -26,6 +26,7 @@ export interface Settings {
   customSearchEngines: SearchEngine[];
   language: Language;
   showDefaultBookmarks: boolean;
+  optimizeStreams: boolean;
 }
 
 const defaultBackgrounds: BackgroundImage[] = [
@@ -52,7 +53,8 @@ const defaultSettings: Settings = {
   searchEngineId: 'google',
   customSearchEngines: defaultSearchEngines,
   language: 'es',
-  showDefaultBookmarks: true
+  showDefaultBookmarks: true,
+  optimizeStreams: false
 };
 
 export const useSettings = () => {
