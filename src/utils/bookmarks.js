@@ -204,4 +204,6 @@ dropdown34: [
     { text: "IlovePDF", url: "https://www.ilovepdf.com/es" },
     { text: "WPS PDF Tools", url: "https://pdf.wps.com/" },
 ],
-  
+};
+
+export default dropdownData;  

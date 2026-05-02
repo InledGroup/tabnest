@@ -1,8 +1,8 @@
 export const getStorage = async <T>(key: string, defaultValue: T): Promise<T> => {
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
     return new Promise((resolve) => {
-      chrome.storage.sync.get([key], (result: { [key: string]: any }) => {
-        resolve(result[key] !== undefined ? result[key] : defaultValue);
+      chrome.storage.sync.get([key], (result: Record<string, unknown>) => {
+        resolve(result[key] !== undefined ? result[key] as T : defaultValue);
       });
     });
   }

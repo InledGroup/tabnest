@@ -9,6 +9,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { TVTuner } from './components/TVTuner';
 import { RadioTuner } from './components/RadioTuner';
 import { LegalViewer } from './components/LegalViewer';
+import { StartBanner } from './components/StartBanner';
 import { useSettings } from './hooks/useSettings';
 import { useNewsFeed } from './hooks/useNewsFeed';
 import { useBookmarks } from './hooks/useBookmarks';
@@ -281,6 +282,12 @@ function App() {
             lang={lang}
           />
         </motion.div>
+
+        {/* Banner de Start */}
+        <StartBanner 
+          isVisible={!settings.dismissedStartBanner}
+          onDismiss={() => updateSettings({ dismissedStartBanner: true })}
+        />
 
         {/* Footer Legal */}
         <footer className="w-full max-w-6xl mx-auto py-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 opacity-40 hover:opacity-100 transition-opacity">

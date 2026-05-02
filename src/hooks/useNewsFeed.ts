@@ -27,6 +27,21 @@ export const useNewsFeed = () => {
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
+  const refreshNews = async (activeSources: NewsSource[]) => {
+    setLoading(true);
+    setPage(1);
+    const enabledSources = activeSources.filter(s => s.enabled);
+    const results = await Promise.all(
+      enabledSources.map(source => fetchFeed(source.url, source.name))
+    );
+    const flattened = results.flat().sort((a, b) => 
+      new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+    );
+    setAllNews(flattened);
+    setDisplayNews(flattened.slice(0, ITEMS_PER_PAGE));
+    setLoading(false);
+  };
+
   useEffect(() => {
     getStorage<NewsSource[]>('newsSources', defaultSources).then(savedSources => {
       // Si el usuario ya tenía fuentes, nos aseguramos de que las nuevas por defecto estén presentes
@@ -49,21 +64,6 @@ export const useNewsFeed = () => {
       refreshNews(mergedSources);
     });
   }, []);
-
-  const refreshNews = async (activeSources: NewsSource[]) => {
-    setLoading(true);
-    setPage(1);
-    const enabledSources = activeSources.filter(s => s.enabled);
-    const results = await Promise.all(
-      enabledSources.map(source => fetchFeed(source.url, source.name))
-    );
-    const flattened = results.flat().sort((a, b) => 
-      new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
-    );
-    setAllNews(flattened);
-    setDisplayNews(flattened.slice(0, ITEMS_PER_PAGE));
-    setLoading(false);
-  };
 
   const loadMore = () => {
     const nextPage = page + 1;
