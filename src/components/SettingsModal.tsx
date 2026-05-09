@@ -23,6 +23,7 @@ interface SettingsModalProps {
   onDeleteFolder: (id: string) => void;
   onMoveBookmark: (id: string, newParentId?: string) => void;
   onUpdateFolder: (id: string, updates: Partial<FolderType>) => void;
+  onRefreshFavicons: () => Promise<void>;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ 
@@ -40,9 +41,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onDeleteBookmark,
   onDeleteFolder,
   onMoveBookmark,
-  onUpdateFolder
+  onUpdateFolder,
+  onRefreshFavicons
 }) => {
   const lang = settings.language;
+  const [isRefreshingFavicons, setIsRefreshingFavicons] = React.useState(false);
+
+  const handleRefreshFavicons = async () => {
+    setIsRefreshingFavicons(true);
+    await onRefreshFavicons();
+    setIsRefreshingFavicons(false);
+  };
 
   return (
     <motion.div 
@@ -132,6 +141,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onUpdateFolder={onUpdateFolder}
               lang={lang}
             />
+            
+            <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-white/80">{t('refreshFavicons', lang)}</p>
+                <p className="text-[10px] text-white/40 mt-1 max-w-[200px]">{t('refreshFaviconsDesc', lang)}</p>
+              </div>
+              <button 
+                onClick={handleRefreshFavicons}
+                disabled={isRefreshingFavicons}
+                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isRefreshingFavicons ? 'bg-white/10 text-white/20' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+              >
+                {isRefreshingFavicons ? '...' : t('download', lang)}
+              </button>
+            </div>
           </motion.section>
 
           {/* Fondos */}

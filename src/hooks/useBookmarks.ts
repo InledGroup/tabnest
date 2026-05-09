@@ -6,6 +6,7 @@ export interface Bookmark {
   title: string;
   url: string;
   parentId?: string;
+  favicon?: string;
 }
 
 export interface Folder {
@@ -32,8 +33,60 @@ export const useBookmarks = () => {
     getStorage<string[]>('expandedFolderIds', []).then(setExpandedFolderIds);
   }, []);
 
-  const addBookmark = async (bookmark: Omit<Bookmark, 'id'>) => {
-    const newBookmark = { ...bookmark, id: crypto.randomUUID() };
+  const getFaviconUrl = (url: string) => {
+    try {
+      const domain = new URL(url).hostname;
+      return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const refreshFavicons = async () => {
+    const updated = await Promise.all(bookmarks.map(async (b) => {
+      const faviconUrl = getFaviconUrl(b.url);
+      if (faviconUrl) {
+        try {
+          const response = await fetch(faviconUrl);
+          const blob = await response.blob();
+          return new Promise<Bookmark>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve({ ...b, favicon: reader.result as string });
+            };
+            reader.readAsDataURL(blob);
+          });
+        } catch (e) {
+          console.error(`Error fetching favicon for ${b.url}:`, e);
+          return b;
+        }
+      }
+      return b;
+    }));
+    
+    setBookmarks(updated);
+    await setStorage('bookmarks', updated);
+  };
+
+  const addBookmark = async (bookmark: Omit<Bookmark, 'id' | 'favicon'>) => {
+    let favicon: string | undefined;
+    const faviconUrl = getFaviconUrl(bookmark.url);
+    
+    if (faviconUrl) {
+      try {
+        const response = await fetch(faviconUrl);
+        const blob = await response.blob();
+        favicon = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) {
+        console.error('Error fetching favicon:', e);
+      }
+    }
+
+    const newBookmark: Bookmark = { ...bookmark, id: crypto.randomUUID(), favicon };
     const updated = [...bookmarks, newBookmark];
     setBookmarks(updated);
     await setStorage('bookmarks', updated);
@@ -95,6 +148,7 @@ export const useBookmarks = () => {
     toggleFolder, 
     deleteBookmark, 
     deleteFolder, 
-    moveBookmark 
+    moveBookmark,
+    refreshFavicons 
   };
 };

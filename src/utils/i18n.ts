@@ -50,7 +50,9 @@ export const translations = {
     privacy: 'Privacidad',
     terms: 'Términos',
     updateAvailable: 'Nueva actualización disponible',
-    download: 'Descargar'
+    download: 'Descargar',
+    refreshFavicons: 'Actualizar Favicons',
+    refreshFaviconsDesc: 'Fuerza la descarga de los iconos de los sitios web para todos tus marcadores.'
   },
   en: {
     settings: 'Settings',
@@ -101,7 +103,9 @@ export const translations = {
     privacy: 'Privacy',
     terms: 'Terms',
     updateAvailable: 'New update available',
-    download: 'Download'
+    download: 'Download',
+    refreshFavicons: 'Refresh Favicons',
+    refreshFaviconsDesc: 'Force download website icons for all your bookmarks.'
   }
 };
 

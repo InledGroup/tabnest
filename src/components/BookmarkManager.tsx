@@ -72,37 +72,61 @@ export const BookmarkManager: React.FC<BookmarkManagerProps> = ({
     });
   };
 
-  const renderBookmark = (bookmark: Bookmark) => (
-    <motion.div 
-      key={bookmark.id} 
-      initial={{ opacity: 0, x: -5 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="flex items-center gap-2 py-1.5 pl-8 group hover:bg-white/5 rounded-lg px-2 transition-colors"
-    >
-      <Globe size={14} className="text-white/40" />
-      <span className="text-sm truncate flex-grow text-white/80">{bookmark.title}</span>
-      {!bookmark.id.startsWith('def-') && (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <select 
-            className="bg-white/10 border border-white/10 rounded text-[10px] px-1 py-0.5 outline-none focus:border-blue-500 text-white"
-            value={bookmark.parentId || ''}
-            onChange={(e) => onMoveBookmark(bookmark.id, e.target.value || undefined)}
-          >
-            <option value="" className="bg-slate-900">{t('root', lang)}</option>
-            {folders.map(f => (
-              <option key={f.id} value={f.id} className="bg-slate-900">{f.title}</option>
-            ))}
-          </select>
-          <button 
-            onClick={() => onDeleteBookmark(bookmark.id)}
-            className="p-1 hover:text-red-400 transition-colors"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
-      )}
-    </motion.div>
-  );
+  const renderBookmark = (bookmark: Bookmark) => {
+    let hostname = '';
+    try {
+      hostname = new URL(bookmark.url).hostname;
+    } catch (e) {
+      // Silently fail
+    }
+
+    return (
+      <motion.div 
+        key={bookmark.id} 
+        initial={{ opacity: 0, x: -5 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-2 py-1.5 pl-8 group hover:bg-white/5 rounded-lg px-2 transition-colors"
+      >
+        {bookmark.favicon ? (
+          <img src={bookmark.favicon} alt="" className="w-3.5 h-3.5 shrink-0 rounded-sm" />
+        ) : (
+          hostname ? (
+            <img 
+              src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=32`} 
+              alt="" 
+              className="w-3.5 h-3.5 shrink-0 rounded-sm"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null
+        )}
+        <Globe size={14} className={`${hostname && !bookmark.favicon ? 'hidden' : ''} text-white/40`} />
+        <span className="text-sm truncate flex-grow text-white/80">{bookmark.title}</span>
+        {!bookmark.id.startsWith('def-') && (
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <select 
+              className="bg-white/10 border border-white/10 rounded text-[10px] px-1 py-0.5 outline-none focus:border-blue-500 text-white"
+              value={bookmark.parentId || ''}
+              onChange={(e) => onMoveBookmark(bookmark.id, e.target.value || undefined)}
+            >
+              <option value="" className="bg-slate-900">{t('root', lang)}</option>
+              {folders.map(f => (
+                <option key={f.id} value={f.id} className="bg-slate-900">{f.title}</option>
+              ))}
+            </select>
+            <button 
+              onClick={() => onDeleteBookmark(bookmark.id)}
+              className="p-1 hover:text-red-400 transition-colors"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        )}
+      </motion.div>
+    );
+  };
 
   return (
     <div className="space-y-4">

@@ -32,7 +32,8 @@ function App() {
     updateFolder,
     deleteBookmark,
     deleteFolder,
-    moveBookmark
+    moveBookmark,
+    refreshFavicons
   } = useBookmarks();
   const { 
     news, 
@@ -327,6 +328,7 @@ function App() {
               onDeleteFolder={deleteFolder}
               onMoveBookmark={moveBookmark}
               onUpdateFolder={updateFolder}
+              onRefreshFavicons={refreshFavicons}
             />
           )}
 

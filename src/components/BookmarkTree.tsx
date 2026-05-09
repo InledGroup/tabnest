@@ -62,18 +62,42 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
                   className="overflow-hidden border-t border-white/5"
                 >
                   <div className="px-2 pb-3 pt-2 space-y-1">
-                    {bookmarks.filter(b => b.parentId === folder.id).map(bookmark => (
-                      <motion.a 
-                        key={bookmark.id}
-                        initial={{ x: -10, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        href={bookmark.url}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-all text-sm text-white/70 hover:text-white group"
-                      >
-                        <Globe size={16} className="shrink-0 text-white/20 group-hover:text-blue-400 transition-colors" />
-                        <span className="truncate font-medium">{bookmark.title}</span>
-                      </motion.a>
-                    ))}
+                    {bookmarks.filter(b => b.parentId === folder.id).map(bookmark => {
+                      let hostname = '';
+                      try {
+                        hostname = new URL(bookmark.url).hostname;
+                      } catch (e) {
+                        // Silently fail for invalid URLs
+                      }
+                      
+                      return (
+                        <motion.a 
+                          key={bookmark.id}
+                          initial={{ x: -10, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          href={bookmark.url}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-all text-sm text-white/70 hover:text-white group"
+                        >
+                          {bookmark.favicon ? (
+                            <img src={bookmark.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
+                          ) : (
+                            hostname ? (
+                              <img 
+                                src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=32`} 
+                                alt="" 
+                                className="w-4 h-4 shrink-0 rounded-sm"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                            ) : null
+                          )}
+                          <Globe size={16} className={`${hostname && !bookmark.favicon ? 'hidden' : ''} shrink-0 text-white/20 group-hover:text-blue-400 transition-colors`} />
+                          <span className="truncate font-medium">{bookmark.title}</span>
+                        </motion.a>
+                      );
+                    })}
                     {bookmarks.filter(b => b.parentId === folder.id).length === 0 && (
                       <p className="text-[10px] text-white/20 italic text-center py-4 uppercase tracking-widest font-bold">{t('empty', lang)}</p>
                     )}
@@ -95,16 +119,40 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
         >
            <p className="text-[10px] font-bold text-white/20 uppercase px-3 mb-2 tracking-widest">{t('empty', lang)}</p>
            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {bookmarks.filter(b => !b.parentId).map(bookmark => (
-              <a 
-                key={bookmark.id}
-                href={bookmark.url}
-                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-all text-sm text-white/70 hover:text-white group border border-transparent hover:border-white/10 bg-white/5"
-              >
-                <Globe size={16} className="shrink-0 text-white/20 group-hover:text-blue-400 transition-colors" />
-                <span className="truncate font-medium">{bookmark.title}</span>
-              </a>
-            ))}
+            {bookmarks.filter(b => !b.parentId).map(bookmark => {
+              let hostname = '';
+              try {
+                hostname = new URL(bookmark.url).hostname;
+              } catch (e) {
+                // Silently fail
+              }
+
+              return (
+                <a 
+                  key={bookmark.id}
+                  href={bookmark.url}
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-all text-sm text-white/70 hover:text-white group border border-transparent hover:border-white/10 bg-white/5"
+                >
+                  {bookmark.favicon ? (
+                    <img src={bookmark.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
+                  ) : (
+                    hostname ? (
+                      <img 
+                        src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=32`} 
+                        alt="" 
+                        className="w-4 h-4 shrink-0 rounded-sm"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null
+                  )}
+                  <Globe size={16} className={`${hostname && !bookmark.favicon ? 'hidden' : ''} shrink-0 text-white/20 group-hover:text-blue-400 transition-colors`} />
+                  <span className="truncate font-medium">{bookmark.title}</span>
+                </a>
+              );
+            })}
           </div>
         </motion.div>
       )}
