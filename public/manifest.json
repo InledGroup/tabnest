@@ -44,6 +44,12 @@
   "action": {
     "default_popup": "index.html"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tabnest@laquay.me",
+      "strict_min_version": "109.0"
+    }
+  },
   "icons": {
     "16": "tabnest.png",
     "48": "tabnest.png",

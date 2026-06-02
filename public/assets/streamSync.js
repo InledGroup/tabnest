@@ -1,7 +1,9 @@
 (function() {
     'use strict';
 
-    chrome.storage.sync.get(['settings'], (result) => {
+    const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+
+    browserAPI.storage.sync.get(['settings'], (result) => {
         if (!result.settings || result.settings.optimizeStreams !== true) {
             return; // Inactivo por defecto (Opt-in)
         }

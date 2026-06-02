@@ -8,8 +8,8 @@ Su privacidad es fundamental para nosotros. **TabNest** ha sido diseñada para s
 - No utilizamos cookies de rastreo ni herramientas de análisis de terceros.
 
 ## Almacenamiento Local
-- Toda su configuración (marcadores, motores de búsqueda personalizados, fuentes RSS y preferencias visuales) se almacena localmente en su navegador mediante la API `chrome.storage`.
-- Si utiliza la sincronización de Chrome, sus datos se sincronizarán únicamente entre sus propios dispositivos a través de su cuenta de Google.
+- Toda su configuración (marcadores, motores de búsqueda personalizados, fuentes RSS y preferencias visuales) se almacena localmente en su navegador mediante las APIs de almacenamiento de extensiones (`chrome.storage` o `browser.storage`).
+- Si utiliza la sincronización del navegador, sus datos se sincronizarán únicamente entre sus propios dispositivos a través de su cuenta.
 
 ## Servicios de Terceros
 - Al cargar feeds de noticias o emisiones de TV/Radio, su navegador realiza peticiones directas a los servidores de esos medios. En esos casos, se aplican las políticas de privacidad de los respectivos proveedores de contenido.

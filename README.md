@@ -74,7 +74,7 @@ Este proyecto utiliza un stack moderno para asegurar rendimiento y fluidez:
 TabNest es una herramienta técnica que facilita el acceso a contenidos públicos.
 
 - **Contenidos:** No alojamos ni retransmitimos ninguna señal. Los datos de TV/Radio provienen de TDTChannels.
-- **Privacidad:** No recopilamos datos. Todo se almacena localmente en tu navegador (`chrome.storage`).
+- **Privacidad:** No recopilamos datos. Todo se almacena localmente en tu navegador (`chrome.storage` / `browser.storage`).
 - **Código Abierto:** Proyecto desarrollado para la comunidad.
 
 ---
