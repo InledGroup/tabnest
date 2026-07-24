@@ -218,23 +218,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div className="w-full max-w-2xl mx-auto relative z-50">
       {folderContext && (
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 mb-2 px-2"
-        >
+        <div className="flex items-center gap-2 mb-2 px-2">
           <button
             onClick={() => { setFolderContext(null); setQuery(''); }}
-            className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-xs font-bold text-white/70 hover:text-white transition-all border border-white/10"
+            className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/15 rounded-lg text-xs font-medium text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft size={12} />
             {t('backToRoot', lang)}
           </button>
-          <span className="text-white/30 text-xs">/</span>
-          <span className="text-white/80 text-xs font-bold">
+          <span className="text-white/20 text-xs">/</span>
+          <span className="text-white/60 text-xs font-medium">
             {folderContext.emoji} {folderContext.title}
           </span>
-        </motion.div>
+        </div>
       )}
 
       <form onSubmit={handleFormSubmit} className="relative group">
@@ -248,18 +244,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus
-          className={`w-full px-6 py-4 pl-14 pr-12 bg-white/10 backdrop-blur-xl border rounded-full text-white placeholder-white/50 outline-none transition-all shadow-2xl ${
+          className={`w-full px-6 py-3.5 pl-12 pr-10 bg-white/10 border rounded-xl text-white placeholder-white/40 outline-none transition-colors ${
             focused
-              ? 'bg-white/20 border-white/40 shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)]'
-              : 'border-white/20 hover:border-white/30'
+              ? 'border-white/30'
+              : 'border-white/10 hover:border-white/20'
           }`}
         />
         <Search
-          className="absolute left-5 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors"
-          size={24}
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white/70 transition-colors"
+          size={20}
         />
         {query && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/30 text-[10px]">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/20 text-[10px]">
             <CornerDownLeft size={12} />
           </div>
         )}
@@ -268,16 +264,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <AnimatePresence>
         {showResults && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.12 }}
             ref={resultsRef}
-            className="absolute left-0 right-0 mt-2 bg-slate-950/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden max-h-[60vh] overflow-y-auto custom-scrollbar p-1"
+            className="absolute left-0 right-0 mt-1 bg-slate-900/95 border border-white/10 rounded-xl overflow-hidden max-h-[60vh] overflow-y-auto custom-scrollbar"
           >
             {results.length === 0 && query && (
               <div className="p-6 text-center">
-                <p className="text-white/30 text-sm font-bold">{t('noResults', lang)}</p>
+                <p className="text-white/30 text-sm">{t('noResults', lang)}</p>
                 <p className="text-white/20 text-xs mt-1">{query}</p>
               </div>
             )}
@@ -297,28 +293,27 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 return (
                   <div
                     key={key}
-                    className={`flex items-center gap-4 px-5 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                       isSelected ? 'bg-white/10' : 'hover:bg-white/5'
                     }`}
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-inner"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-base shrink-0"
                       style={{
-                        backgroundColor: `${f.color || '#3b82f6'}20`,
+                        backgroundColor: `${f.color || '#3b82f6'}15`,
                         color: f.color || '#3b82f6',
-                        border: `1px solid ${f.color || '#3b82f6'}40`,
                       }}
                     >
                       {f.emoji || '📂'}
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-bold text-white truncate">{f.title}</p>
-                      <p className="text-[10px] text-white/30">{t('openFolder', lang)}</p>
+                      <p className="text-sm font-medium text-white/90 truncate">{f.title}</p>
+                      <p className="text-[10px] text-white/25">{t('openFolder', lang)}</p>
                     </div>
                     {f.shortcut && (
-                      <kbd className="px-2 py-0.5 bg-white/10 border border-white/10 rounded text-[10px] font-mono text-white/50 shrink-0">
+                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/30 shrink-0">
                         {f.shortcut}
                       </kbd>
                     )}
@@ -333,36 +328,36 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 return (
                   <div
                     key={key}
-                    className={`flex items-center gap-4 px-5 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                       isSelected ? 'bg-white/10' : 'hover:bg-white/5'
                     }`}
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
                     {b.favicon ? (
-                      <img src={b.favicon} alt="" className="w-5 h-5 shrink-0 rounded-sm" />
+                      <img src={b.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
                     ) : hostname ? (
                       <img
                         src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=32`}
                         alt=""
-                        className="w-5 h-5 shrink-0 rounded-sm"
+                        className="w-4 h-4 shrink-0 rounded-sm"
                       />
                     ) : (
-                      <Globe size={20} className="text-white/30 shrink-0" />
+                      <Globe size={16} className="text-white/20 shrink-0" />
                     )}
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-bold text-white truncate">
+                      <p className="text-sm font-medium text-white/90 truncate">
                         {highlightMatch(b.title, query)}
                       </p>
                       {item.folderName && (
-                        <p className="text-[10px] text-white/30">{item.folderName}</p>
+                        <p className="text-[10px] text-white/25">{item.folderName}</p>
                       )}
                       {!item.folderName && (
-                        <p className="text-[10px] text-white/20 truncate">{hostname}</p>
+                        <p className="text-[10px] text-white/15 truncate">{hostname}</p>
                       )}
                     </div>
                     {b.shortcut && (
-                      <kbd className="px-2 py-0.5 bg-white/10 border border-white/10 rounded text-[10px] font-mono text-white/50 shrink-0">
+                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/30 shrink-0">
                         {b.shortcut}
                       </kbd>
                     )}
@@ -375,22 +370,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 return (
                   <div
                     key="search"
-                    className={`flex items-center gap-4 px-5 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                       isSelected ? 'bg-white/10' : 'hover:bg-white/5'
                     }`}
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
-                      <Search size={18} className="text-blue-400" />
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                      <Search size={16} className="text-blue-400/80" />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-bold text-white truncate">
-                        {t('webSearch', lang)}: <span className="text-blue-400">{item.query}</span>
+                      <p className="text-sm font-medium text-white/90 truncate">
+                        {t('webSearch', lang)}: <span className="text-blue-400/80">{item.query}</span>
                       </p>
-                      <p className="text-[10px] text-white/30">{engine.name}</p>
+                      <p className="text-[10px] text-white/25">{engine.name}</p>
                     </div>
-                    <CornerDownLeft size={14} className="text-white/20 shrink-0" />
+                    <CornerDownLeft size={12} className="text-white/15 shrink-0" />
                   </div>
                 );
               }
@@ -399,22 +394,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 return (
                   <div
                     key="ai"
-                    className={`flex items-center gap-4 px-5 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                       isSelected ? 'bg-white/10' : 'hover:bg-white/5'
                     }`}
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/30 to-blue-500/30 flex items-center justify-center shrink-0 border border-purple-500/20">
-                      <span className="text-sm">✨</span>
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                      <span className="text-xs">AI</span>
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-bold text-white truncate">
-                        IA: <span className="text-purple-400">{item.query}</span>
+                      <p className="text-sm font-medium text-white/90 truncate">
+                        IA: <span className="text-purple-400/80">{item.query}</span>
                       </p>
-                      <p className="text-[10px] text-white/30">Google AI Mode</p>
+                      <p className="text-[10px] text-white/25">Google AI Mode</p>
                     </div>
-                    <CornerDownLeft size={14} className="text-white/20 shrink-0" />
+                    <CornerDownLeft size={12} className="text-white/15 shrink-0" />
                   </div>
                 );
               }

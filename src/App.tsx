@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { Settings as SettingsIcon, Tv, Radio, ChevronUp, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { SearchBar } from './components/SearchBar';
 import { BookmarkTree } from './components/BookmarkTree';
 import { NewsFeed } from './components/NewsFeed';
@@ -57,7 +57,6 @@ function App() {
   const [legalView, setLegalView] = useState<'disclaimer' | 'privacy' | 'terms' | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Control de scroll para botón "Subir"
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
@@ -74,12 +73,10 @@ function App() {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
   };
 
-  // Idioma de Moment
   useEffect(() => {
     moment.locale(settings.language);
   }, [settings.language]);
 
-  // Rotación de fondos
   useEffect(() => {
     if (!settings.autoRotate || settings.backgrounds.length <= 1) return;
 
@@ -112,7 +109,6 @@ function App() {
   const currentBackground = settings.backgrounds.find(bg => bg.id === settings.currentBackgroundId) || settings.backgrounds[0];
   const lang = settings.language;
 
-  // Combinar marcadores si está activo
   const effectiveBookmarks = settings.showDefaultBookmarks 
     ? [...DEFAULT_BOOKMARKS, ...bookmarks]
     : bookmarks;
@@ -123,42 +119,33 @@ function App() {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      {/* Fondo Estático (Parallax) */}
-      <motion.div 
+      {/* Fondo */}
+      <div
         key={currentBackground.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-opacity duration-1000"
         style={{ 
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${currentBackground.url})`,
-          transform: 'scale(1.05)'
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.55)), url(${currentBackground.url})`,
         }}
       />
 
-      {/* Contenido Scrolleable */}
+      {/* Contenido */}
       <div className="relative z-10 min-h-screen flex flex-col items-center p-8">
         {/* Banner de Actualización */}
         <AnimatePresence>
           {updateUrl && (
             <motion.div 
-              initial={{ y: -50, opacity: 0 }}
+              initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
+              exit={{ y: -20, opacity: 0 }}
               className="fixed top-0 left-0 right-0 z-[100] flex justify-center p-4"
             >
-              <div className="bg-blue-600/80 backdrop-blur-xl border border-blue-400/30 px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-xl">
-                    <SettingsIcon size={18} className="text-white animate-spin-slow" />
-                  </div>
-                  <span className="text-sm font-black uppercase tracking-widest text-white">{t('updateAvailable', lang)}</span>
-                </div>
+              <div className="bg-blue-600/90 border border-blue-400/20 px-5 py-2.5 rounded-xl flex items-center gap-5">
+                <span className="text-sm font-semibold text-white">{t('updateAvailable', lang)}</span>
                 <a 
                   href={updateUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-white text-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg shadow-black/20"
+                  className="bg-white text-blue-600 px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-50 transition-colors"
                 >
                   {t('download', lang)}
                 </a>
@@ -168,83 +155,66 @@ function App() {
         </AnimatePresence>
 
         {/* Botones de Navegación Lateral (Izquierda) */}
-        <div className="fixed bottom-10 left-6 flex flex-col gap-3 z-40">
+        <div className="fixed bottom-8 left-5 flex flex-col gap-2 z-40">
           <AnimatePresence>
             {showScrollTop && (
               <motion.button 
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={scrollToTop}
-                className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-xl"
+                className="p-2 bg-black/30 rounded-full text-white/60 hover:text-white hover:bg-black/50 transition-colors"
                 title="Subir"
               >
-                <ChevronUp size={20} />
+                <ChevronUp size={18} />
               </motion.button>
             )}
           </AnimatePresence>
-          <motion.button 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <button 
             onClick={scrollToBottom}
-            className="p-2 bg-white/10 backdrop-blur-md rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-xl"
-            title="Bajar al pie de página"
+            className="p-2 bg-black/30 rounded-full text-white/60 hover:text-white hover:bg-black/50 transition-colors"
+            title="Bajar"
           >
-            <ChevronDown size={20} />
-          </motion.button>
+            <ChevronDown size={18} />
+          </button>
         </div>
 
         {/* Botones Flotantes (Derecha) */}
-        <motion.div 
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="fixed top-6 right-6 flex flex-col gap-3 z-40"
-        >
+        <div className="fixed top-5 right-5 flex flex-col gap-2 z-40">
           <button 
             onClick={() => setShowSettings(true)}
-            className="p-3 bg-black/20 backdrop-blur-md rounded-2xl text-white/70 hover:text-white hover:bg-black/40 transition-all border border-white/10 shadow-2xl"
+            className="p-2.5 bg-black/30 rounded-xl text-white/60 hover:text-white hover:bg-black/50 transition-colors"
           >
-            <SettingsIcon size={24} />
+            <SettingsIcon size={20} />
           </button>
           <button 
             onClick={() => setShowTV(true)}
-            className="p-3 bg-blue-500/20 backdrop-blur-md rounded-2xl text-blue-400 hover:text-white hover:bg-blue-500 transition-all border border-blue-500/20 shadow-2xl"
+            className="p-2.5 bg-blue-500/15 rounded-xl text-blue-400/80 hover:text-blue-300 hover:bg-blue-500/25 transition-colors"
           >
-            <Tv size={24} />
+            <Tv size={20} />
           </button>
           <button 
             onClick={() => setShowRadio(true)}
-            className="p-3 bg-purple-500/20 backdrop-blur-md rounded-2xl text-purple-400 hover:text-white hover:bg-purple-500 transition-all border border-purple-500/20 shadow-2xl"
+            className="p-2.5 bg-purple-500/15 rounded-xl text-purple-400/80 hover:text-purple-300 hover:bg-purple-500/25 transition-colors"
           >
-            <Radio size={24} />
+            <Radio size={20} />
           </button>
-        </motion.div>
+        </div>
 
         {/* Reloj */}
         {settings.showClock && (
-          <motion.div 
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="text-center mt-12 mb-12 select-none"
-          >
-            <h1 className="text-9xl font-light tracking-tighter text-white drop-shadow-2xl">
+          <div className="text-center mt-10 mb-10 select-none">
+            <h1 className="text-8xl font-extralight tracking-tighter text-white/90">
               {currentTime.format('HH:mm')}
             </h1>
-            <p className="text-2xl text-white/80 font-medium mt-2 drop-shadow-lg capitalize">
+            <p className="text-xl text-white/60 font-light mt-1 capitalize">
               {currentTime.format('dddd, D [de] MMMM')}
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Barra de Búsqueda */}
-        <motion.div 
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="w-full mb-12"
-        >
+        <div className="w-full mb-10">
           <SearchBar 
             searchEngineId={settings.searchEngineId} 
             engines={settings.customSearchEngines}
@@ -252,15 +222,10 @@ function App() {
             folders={effectiveFolders}
             lang={lang}
           />
-        </motion.div>
+        </div>
 
         {/* Marcadores */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="w-full mb-16"
-        >
+        <div className="w-full mb-14">
           <BookmarkTree 
             bookmarks={effectiveBookmarks}
             folders={effectiveFolders}
@@ -268,15 +233,10 @@ function App() {
             onToggleFolder={toggleFolder}
             lang={lang}
           />
-        </motion.div>
+        </div>
 
         {/* Feed de Noticias */}
-        <motion.div 
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          className="w-full"
-        >
+        <div className="w-full">
           <NewsFeed 
             news={news} 
             loading={newsLoading} 
@@ -285,7 +245,7 @@ function App() {
             hasMore={hasMore}
             lang={lang}
           />
-        </motion.div>
+        </div>
 
         {/* Banner de Start */}
         <StartBanner 
@@ -294,24 +254,24 @@ function App() {
         />
 
         {/* Footer Legal */}
-        <footer className="w-full max-w-6xl mx-auto py-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 opacity-40 hover:opacity-100 transition-opacity">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
+        <footer className="w-full max-w-6xl mx-auto py-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/5 opacity-30 hover:opacity-80 transition-opacity">
+          <p className="text-[10px] text-white/40">
             TabNest © 2026 • {t('tv', lang)} Data by TDTChannels
           </p>
-          <div className="flex items-center gap-8 text-white">
-            <button onClick={() => setLegalView('disclaimer')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+          <div className="flex items-center gap-6 text-white">
+            <button onClick={() => setLegalView('disclaimer')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
               {t('disclaimer', lang)}
             </button>
-            <button onClick={() => setLegalView('privacy')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+            <button onClick={() => setLegalView('privacy')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
               {t('privacy', lang)}
             </button>
-            <button onClick={() => setLegalView('terms')} className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">
+            <button onClick={() => setLegalView('terms')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
               {t('terms', lang)}
             </button>
           </div>
         </footer>
 
-        {/* Modales con AnimatePresence */}
+        {/* Modales */}
         <AnimatePresence>
           {showSettings && (
             <SettingsModal 

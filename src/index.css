@@ -7,36 +7,17 @@
     background-color: #000;
     color: white;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    overflow-y: scroll; /* Asegurar scrollbar siempre para evitar saltos */
+    overflow-y: scroll;
     scrollbar-gutter: stable;
   }
 }
 
-/* Animaciones personalizadas */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slide-in-bottom {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.animate-fade-in {
-  animation: fade-in 1s ease-out forwards;
-}
-
-.animate-slide-in-bottom {
-  animation: slide-in-bottom 0.8s ease-out forwards;
-}
-
-/* Transiciones suaves para el fondo */
+/* Transición suave para el fondo */
 .bg-transition {
   transition: background-image 1s ease-in-out;
 }
 
-/* Custom Scrollbar */
+/* Scrollbar minimalista */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -46,24 +27,22 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
-/* Scrollbar solo visible al hacer hover */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -75,14 +54,14 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .custom-scrollbar:hover {
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
