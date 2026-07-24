@@ -30,8 +30,6 @@ export const translations = {
     empty: 'Vacío',
     language: 'Idioma',
     showDefaultBookmarks: 'Mostrar marcadores predeterminados',
-    optimizeStreams: 'Optimizar reproductores web',
-    optimizeStreamsDesc: 'Mejora la estabilidad en reproductores de TV eliminando contenido redundante y sincronizando la señal. (Puede afectar a la carga de ciertos elementos).',
     root: 'Raíz',
     addHere: 'Añadir aquí',
     delete: 'Eliminar',
@@ -52,7 +50,15 @@ export const translations = {
     updateAvailable: 'Nueva actualización disponible',
     download: 'Descargar',
     refreshFavicons: 'Actualizar Favicons',
-    refreshFaviconsDesc: 'Fuerza la descarga de los iconos de los sitios web para todos tus marcadores.'
+    refreshFaviconsDesc: 'Fuerza la descarga de los iconos de los sitios web para todos tus marcadores.',
+    shortcut: 'Atajo',
+    shortcutDesc: 'Teclea este atajo para acceder rápido',
+    searchBookmarks: 'Buscar marcadores o escribir atajo...',
+    enterFolder: 'Entrar en',
+    backToRoot: 'Volver al inicio',
+    openFolder: 'Abrir carpeta',
+    noResults: 'Sin resultados',
+    webSearch: 'Buscar en la web'
   },
   en: {
     settings: 'Settings',
@@ -83,8 +89,6 @@ export const translations = {
     empty: 'Empty',
     language: 'Language',
     showDefaultBookmarks: 'Show default bookmarks',
-    optimizeStreams: 'Optimize web players',
-    optimizeStreamsDesc: 'Enhances stability in TV players by removing redundant content and syncing the signal. (May affect the loading of certain elements).',
     root: 'Root',
     addHere: 'Add here',
     delete: 'Delete',
@@ -105,7 +109,15 @@ export const translations = {
     updateAvailable: 'New update available',
     download: 'Download',
     refreshFavicons: 'Refresh Favicons',
-    refreshFaviconsDesc: 'Force download website icons for all your bookmarks.'
+    refreshFaviconsDesc: 'Force download website icons for all your bookmarks.',
+    shortcut: 'Shortcut',
+    shortcutDesc: 'Type this shortcut for quick access',
+    searchBookmarks: 'Search bookmarks or type a shortcut...',
+    enterFolder: 'Enter',
+    backToRoot: 'Back to root',
+    openFolder: 'Open folder',
+    noResults: 'No results',
+    webSearch: 'Search the web'
   }
 };
 

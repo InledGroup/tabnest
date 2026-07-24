@@ -33,7 +33,8 @@ function App() {
     deleteBookmark,
     deleteFolder,
     moveBookmark,
-    refreshFavicons
+    refreshFavicons,
+    updateBookmark
   } = useBookmarks();
   const { 
     news, 
@@ -98,12 +99,12 @@ function App() {
     return () => clearInterval(timer);
   }, [settings.timezone]);
 
-  const handleAddBookmark = (title: string, url: string, parentId?: string) => {
-    addBookmark({ title, url, parentId });
+  const handleAddBookmark = (title: string, url: string, parentId?: string, shortcut?: string) => {
+    addBookmark({ title, url, parentId, shortcut });
   };
 
-  const handleAddFolder = (title: string, color?: string, emoji?: string) => {
-    addFolder(title, color, emoji);
+  const handleAddFolder = (title: string, color?: string, emoji?: string, shortcut?: string) => {
+    addFolder(title, color, emoji, shortcut);
   };
 
   if (settingsLoading) return null;
@@ -246,7 +247,9 @@ function App() {
         >
           <SearchBar 
             searchEngineId={settings.searchEngineId} 
-            engines={settings.customSearchEngines} 
+            engines={settings.customSearchEngines}
+            bookmarks={effectiveBookmarks}
+            folders={effectiveFolders}
             lang={lang}
           />
         </motion.div>
@@ -328,6 +331,7 @@ function App() {
               onDeleteFolder={deleteFolder}
               onMoveBookmark={moveBookmark}
               onUpdateFolder={updateFolder}
+              onUpdateBookmark={updateBookmark}
               onRefreshFavicons={refreshFavicons}
             />
           )}

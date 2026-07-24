@@ -7,20 +7,82 @@ export interface Bookmark {
   url: string;
   parentId?: string;
   favicon?: string;
+  shortcut?: string;
+}
+
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
 }
 
 export interface Folder {
   id: string;
   title: string;
-  isOpen?: boolean; // Mantenemos por compatibilidad, pero usaremos expandedFolderIds
+  isOpen?: boolean;
   color?: string;
   emoji?: string;
+  shortcut?: string;
 }
 
 const defaultFolders: Folder[] = [
   { id: '1', title: 'Work', color: '#3b82f6', emoji: '💼' },
   { id: '2', title: 'Social', color: '#ec4899', emoji: '🌟' }
 ];
+
+export const generateShortcut = (name: string, existingShortcuts: string[]): string => {
+  const lower = name.toLowerCase().trim();
+  const taken = new Set(existingShortcuts);
+
+  const tryShortcut = (s: string): string | null => {
+    return taken.has(s) ? null : s;
+  };
+
+  // 1. Primera letra
+  const first = lower[0];
+  if (first) {
+    const r = tryShortcut(first);
+    if (r) return r;
+  }
+
+  // 2. Dos primeras letras
+  if (lower.length >= 2) {
+    const two = lower.slice(0, 2);
+    const r = tryShortcut(two);
+    if (r) return r;
+  }
+
+  // 3. Primera letra + siguiente consonante
+  if (first) {
+    const vowels = new Set('aeiouáéíóú');
+    const consonant = lower.split('').find(c => c !== first && !vowels.has(c) && /[a-záéíóú]/.test(c));
+    if (consonant) {
+      const combo = first + consonant;
+      const r = tryShortcut(combo);
+      if (r) return r;
+    }
+  }
+
+  // 4. Dos primeras letras + número
+  if (lower.length >= 2) {
+    for (let i = 2; i <= 9; i++) {
+      const candidate = lower.slice(0, 2) + i;
+      const r = tryShortcut(candidate);
+      if (r) return r;
+    }
+  }
+
+  // 5. Fallback: primera letra + 2, 3, ...
+  if (first) {
+    for (let i = 2; i <= 99; i++) {
+      const candidate = first + i;
+      const r = tryShortcut(candidate);
+      if (r) return r;
+    }
+  }
+
+  return '';
+};
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -69,8 +131,9 @@ export const useBookmarks = () => {
   };
 
   const addBookmark = async (bookmark: Omit<Bookmark, 'id' | 'favicon'>) => {
+    const url = normalizeUrl(bookmark.url);
     let favicon: string | undefined;
-    const faviconUrl = getFaviconUrl(bookmark.url);
+    const faviconUrl = getFaviconUrl(url);
     
     if (faviconUrl) {
       try {
@@ -86,14 +149,26 @@ export const useBookmarks = () => {
       }
     }
 
-    const newBookmark: Bookmark = { ...bookmark, id: crypto.randomUUID(), favicon };
+    const existingShortcuts = [
+      ...bookmarks.map(b => b.shortcut).filter(Boolean) as string[],
+      ...folders.map(f => f.shortcut).filter(Boolean) as string[]
+    ];
+    const shortcut = bookmark.shortcut || generateShortcut(bookmark.title, existingShortcuts);
+
+    const newBookmark: Bookmark = { ...bookmark, url, id: crypto.randomUUID(), favicon, shortcut };
     const updated = [...bookmarks, newBookmark];
     setBookmarks(updated);
     await setStorage('bookmarks', updated);
   };
 
-  const addFolder = async (title: string, color?: string, emoji?: string) => {
-    const newFolder = { id: crypto.randomUUID(), title, color, emoji };
+  const addFolder = async (title: string, color?: string, emoji?: string, shortcut?: string) => {
+    const existingShortcuts = [
+      ...bookmarks.map(b => b.shortcut).filter(Boolean) as string[],
+      ...folders.map(f => f.shortcut).filter(Boolean) as string[]
+    ];
+    const resolvedShortcut = shortcut || generateShortcut(title, existingShortcuts);
+
+    const newFolder: Folder = { id: crypto.randomUUID(), title, color, emoji, shortcut: resolvedShortcut };
     const updated = [...folders, newFolder];
     setFolders(updated);
     await setStorage('folders', updated);
@@ -103,6 +178,13 @@ export const useBookmarks = () => {
     const updated = folders.map(f => f.id === id ? { ...f, ...updates } : f);
     setFolders(updated);
     await setStorage('folders', updated);
+  };
+
+  const updateBookmark = async (id: string, updates: Partial<Bookmark>) => {
+    const normalized = updates.url ? { ...updates, url: normalizeUrl(updates.url) } : updates;
+    const updated = bookmarks.map(b => b.id === id ? { ...b, ...normalized } : b);
+    setBookmarks(updated);
+    await setStorage('bookmarks', updated);
   };
 
   const toggleFolder = async (id: string) => {
@@ -144,7 +226,8 @@ export const useBookmarks = () => {
     expandedFolderIds,
     addBookmark, 
     addFolder, 
-    updateFolder, 
+    updateFolder,
+    updateBookmark,
     toggleFolder, 
     deleteBookmark, 
     deleteFolder, 

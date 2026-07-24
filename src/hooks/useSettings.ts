@@ -26,7 +26,6 @@ export interface Settings {
   customSearchEngines: SearchEngine[];
   language: Language;
   showDefaultBookmarks: boolean;
-  optimizeStreams: boolean;
   dismissedStartBanner: boolean;
 }
 
@@ -56,7 +55,6 @@ const defaultSettings: Settings = {
   customSearchEngines: defaultSearchEngines,
   language: 'es',
   showDefaultBookmarks: true,
-  optimizeStreams: false,
   dismissedStartBanner: false
 };
 

@@ -17,12 +17,13 @@ interface SettingsModalProps {
   onRemoveSource: (url: string) => void;
   bookmarks: Bookmark[];
   folders: FolderType[];
-  onAddBookmark: (title: string, url: string, parentId?: string) => void;
-  onAddFolder: (title: string, color?: string, emoji?: string) => void;
+  onAddBookmark: (title: string, url: string, parentId?: string, shortcut?: string) => void;
+  onAddFolder: (title: string, color?: string, emoji?: string, shortcut?: string) => void;
   onDeleteBookmark: (id: string) => void;
   onDeleteFolder: (id: string) => void;
   onMoveBookmark: (id: string, newParentId?: string) => void;
   onUpdateFolder: (id: string, updates: Partial<FolderType>) => void;
+  onUpdateBookmark?: (id: string, updates: Partial<Bookmark>) => void;
   onRefreshFavicons: () => Promise<void>;
 }
 
@@ -42,6 +43,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onDeleteFolder,
   onMoveBookmark,
   onUpdateFolder,
+  onUpdateBookmark,
   onRefreshFavicons
 }) => {
   const lang = settings.language;
@@ -95,19 +97,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
-
-            <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
-              <div>
-                <p className="text-sm font-bold text-white/80">{t('optimizeStreams', lang)}</p>
-                <p className="text-[10px] text-white/40 mt-1 max-w-sm">{t('optimizeStreamsDesc', lang)}</p>
-              </div>
-              <button 
-                onClick={() => onUpdate({ optimizeStreams: !settings.optimizeStreams })}
-                className={`w-12 h-6 rounded-full transition-all relative shrink-0 ${settings.optimizeStreams ? 'bg-blue-500 shadow-lg shadow-blue-500/30' : 'bg-white/10'}`}
-              >
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.optimizeStreams ? 'right-1' : 'left-1'}`} />
-              </button>
-            </div>
           </motion.section>
 
           {/* Gestión de Marcadores */}
@@ -139,6 +128,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onDeleteFolder={onDeleteFolder}
               onMoveBookmark={onMoveBookmark}
               onUpdateFolder={onUpdateFolder}
+              onUpdateBookmark={onUpdateBookmark}
               lang={lang}
             />
             
