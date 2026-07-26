@@ -27,6 +27,8 @@ export interface Settings {
   language: Language;
   showDefaultBookmarks: boolean;
   dismissedStartBanner: boolean;
+  fontSize: number;
+  customCss: string;
 }
 
 const defaultBackgrounds: BackgroundImage[] = [
@@ -55,7 +57,9 @@ const defaultSettings: Settings = {
   customSearchEngines: defaultSearchEngines,
   language: 'es',
   showDefaultBookmarks: true,
-  dismissedStartBanner: false
+  dismissedStartBanner: false,
+  fontSize: 16,
+  customCss: ''
 };
 
 export const useSettings = () => {

@@ -21,7 +21,7 @@ import { DEFAULT_BOOKMARKS, DEFAULT_FOLDERS } from './utils/defaultBookmarks';
 
 function App() {
   const { settings, updateSettings, loading: settingsLoading } = useSettings();
-  const { updateUrl } = useUpdater('tabnest-2-26');
+  const updater = useUpdater();
   const { 
     bookmarks, 
     folders, 
@@ -96,6 +96,10 @@ function App() {
     return () => clearInterval(timer);
   }, [settings.timezone]);
 
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${settings.fontSize}px`;
+  }, [settings.fontSize]);
+
   const handleAddBookmark = (title: string, url: string, parentId?: string, shortcut?: string) => {
     addBookmark({ title, url, parentId, shortcut });
   };
@@ -128,11 +132,16 @@ function App() {
         }}
       />
 
+      {/* CSS personalizado */}
+      {settings.customCss && (
+        <style>{settings.customCss}</style>
+      )}
+
       {/* Contenido */}
       <div className="relative z-10 min-h-screen flex flex-col items-center p-8">
         {/* Banner de Actualización */}
         <AnimatePresence>
-          {updateUrl && (
+          {updater.updateUrl && (
             <motion.div 
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -142,7 +151,7 @@ function App() {
               <div className="bg-blue-600/90 border border-blue-400/20 px-5 py-2.5 rounded-xl flex items-center gap-5">
                 <span className="text-sm font-semibold text-white">{t('updateAvailable', lang)}</span>
                 <a 
-                  href={updateUrl} 
+                  href={updater.updateUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="bg-white text-blue-600 px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-50 transition-colors"
@@ -293,6 +302,7 @@ function App() {
               onUpdateFolder={updateFolder}
               onUpdateBookmark={updateBookmark}
               onRefreshFavicons={refreshFavicons}
+              updater={updater}
             />
           )}
 

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { Bookmark, Folder as FolderType } from '../hooks/useBookmarks';
 import { t } from '../utils/i18n';
 import type { Language } from '../utils/i18n';
+import { ScrollingText } from './ScrollingText';
 
 interface BookmarkTreeProps {
   bookmarks: Bookmark[];
@@ -39,7 +40,7 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
             return (
               <div
                 key={folder.id}
-                className="bg-white/5 border border-white/5 rounded-xl overflow-hidden h-fit hover:bg-white/8 transition-colors"
+                className="bg-black/30 backdrop-blur-md border border-white/8 rounded-xl overflow-hidden h-fit hover:bg-black/40 transition-colors"
               >
                 <button
                   onClick={() => onToggleFolder(folder.id)}
@@ -55,17 +56,17 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
                     {folder.emoji ? folder.emoji : (isExpanded ? <FolderOpen size={18} /> : <Folder size={18} />)}
                   </div>
                   <div className="flex-grow min-w-0">
-                    <span className="flex-grow truncate text-sm block">{folder.title}</span>
-                    <span className="text-[10px] text-white/20">{folderBookmarks.length} {t('channels', lang).toLowerCase()}</span>
+                    <ScrollingText className="text-sm block">{folder.title}</ScrollingText>
+                    <span className="text-[10px] text-white/40">{folderBookmarks.length} {t('channels', lang).toLowerCase()}</span>
                   </div>
                   {folder.shortcut && (
-                    <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/30 shrink-0">
+                    <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-mono text-white/50 shrink-0">
                       {folder.shortcut}
                     </kbd>
                   )}
                   <ChevronDown
                     size={14}
-                    className={`text-white/20 shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                    className={`text-white/40 shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                   />
                 </button>
 
@@ -97,11 +98,11 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
                                   className="w-3.5 h-3.5 shrink-0 rounded-sm"
                                 />
                               ) : (
-                                <Globe size={14} className="text-white/15 shrink-0" />
+                                <Globe size={14} className="text-white/30 shrink-0" />
                               )}
-                              <span className="truncate text-[13px] flex-grow">{bookmark.title}</span>
+                              <ScrollingText className="text-[13px] flex-grow">{bookmark.title}</ScrollingText>
                               {bookmark.shortcut && (
-                                <kbd className="px-1 py-0.5 bg-white/5 rounded text-[8px] font-mono text-white/20 shrink-0">
+                                <kbd className="px-1 py-0.5 bg-white/10 rounded text-[8px] font-mono text-white/50 shrink-0">
                                   {bookmark.shortcut}
                                 </kbd>
                               )}
@@ -109,7 +110,7 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
                           );
                         })}
                         {folderBookmarks.length === 0 && (
-                          <p className="text-[10px] text-white/15 text-center py-3">{t('empty', lang)}</p>
+                          <p className="text-[10px] text-white/30 text-center py-3">{t('empty', lang)}</p>
                         )}
                       </div>
                     </motion.div>
@@ -127,7 +128,7 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
             <a
               key={bookmark.id}
               href={bookmark.url}
-              className="bg-white/5 border border-white/5 rounded-xl p-3 flex items-center gap-3 transition-colors hover:bg-white/8 group"
+              className="bg-black/30 backdrop-blur-md border border-white/8 rounded-xl p-3 flex items-center gap-3 transition-colors hover:bg-black/40 group"
             >
               {bookmark.favicon ? (
                 <img src={bookmark.favicon} alt="" className="w-8 h-8 shrink-0 rounded-lg" />
@@ -138,16 +139,16 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
                   className="w-8 h-8 shrink-0 rounded-lg"
                 />
               ) : (
-                <div className="w-8 h-8 shrink-0 rounded-lg bg-white/5 flex items-center justify-center">
-                  <Globe size={16} className="text-white/20" />
+                <div className="w-8 h-8 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
+                  <Globe size={16} className="text-white/40" />
                 </div>
               )}
               <div className="flex-grow min-w-0">
-                <p className="text-sm font-medium text-white/80 group-hover:text-white truncate transition-colors">{bookmark.title}</p>
-                <p className="text-[10px] text-white/15 truncate">{hostname}</p>
+                <ScrollingText className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">{bookmark.title}</ScrollingText>
+                <p className="text-[10px] text-white/40 truncate">{hostname}</p>
               </div>
               {bookmark.shortcut && (
-                <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/25 shrink-0">
+                <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] font-mono text-white/50 shrink-0">
                   {bookmark.shortcut}
                 </kbd>
               )}
@@ -157,7 +158,7 @@ export const BookmarkTree: React.FC<BookmarkTreeProps> = ({
       </div>
 
       {sortedItems.length === 0 && (
-        <div className="text-center py-16 bg-white/5 rounded-xl border border-white/5">
+        <div className="text-center py-16 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5">
           <p className="text-white/30 text-sm">{t('empty', lang)}</p>
         </div>
       )}

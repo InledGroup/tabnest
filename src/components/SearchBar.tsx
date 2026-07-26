@@ -5,6 +5,7 @@ import type { Bookmark, Folder } from '../hooks/useBookmarks';
 import type { SearchEngine } from '../hooks/useSettings';
 import { t } from '../utils/i18n';
 import type { Language } from '../utils/i18n';
+import { ScrollingText } from './ScrollingText';
 
 interface SearchBarProps {
   searchEngineId: string;
@@ -309,7 +310,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       {f.emoji || '📂'}
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-medium text-white/90 truncate">{f.title}</p>
+                      <ScrollingText className="text-sm font-medium text-white/90">{f.title}</ScrollingText>
                       <p className="text-[10px] text-white/25">{t('openFolder', lang)}</p>
                     </div>
                     {f.shortcut && (
@@ -346,9 +347,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       <Globe size={16} className="text-white/20 shrink-0" />
                     )}
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-medium text-white/90 truncate">
+                      <ScrollingText className="text-sm font-medium text-white/90">
                         {highlightMatch(b.title, query)}
-                      </p>
+                      </ScrollingText>
                       {item.folderName && (
                         <p className="text-[10px] text-white/25">{item.folderName}</p>
                       )}
@@ -380,9 +381,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       <Search size={16} className="text-blue-400/80" />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-medium text-white/90 truncate">
+                      <ScrollingText className="text-sm font-medium text-white/90">
                         {t('webSearch', lang)}: <span className="text-blue-400/80">{item.query}</span>
-                      </p>
+                      </ScrollingText>
                       <p className="text-[10px] text-white/25">{engine.name}</p>
                     </div>
                     <CornerDownLeft size={12} className="text-white/15 shrink-0" />
@@ -404,9 +405,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       <span className="text-xs">AI</span>
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="text-sm font-medium text-white/90 truncate">
+                      <ScrollingText className="text-sm font-medium text-white/90">
                         IA: <span className="text-purple-400/80">{item.query}</span>
-                      </p>
+                      </ScrollingText>
                       <p className="text-[10px] text-white/25">Google AI Mode</p>
                     </div>
                     <CornerDownLeft size={12} className="text-white/15 shrink-0" />

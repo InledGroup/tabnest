@@ -9,6 +9,7 @@
     "build:firefox": "tsc -b && vite build",
     "start:firefox": "web-ext run -c web-ext-config.cjs",
     "package:firefox": "npm run build:firefox && cd dist && zip -r -FS ../tabnest-firefox.zip .",
+    "package:chrome": "bash scripts/package-chrome.sh",
     "lint": "eslint .",
     "lint:firefox": "web-ext lint -c web-ext-config.cjs",
     "preview": "vite preview"

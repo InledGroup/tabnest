@@ -5,7 +5,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client", "webextension-polyfill"],
+    "types": ["vite/client", "webextension-polyfill", "chrome"],
     "skipLibCheck": true,
 
     /* Bundler mode */

@@ -65,3 +65,15 @@
 .custom-scrollbar:hover {
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
+
+/* Scrolling text carousel */
+@keyframes scroll-text {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.scrolling-text-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: scroll-text linear infinite;
+}

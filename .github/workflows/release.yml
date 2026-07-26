@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build-and-release:
+    if: contains(github.event.head_commit.message, '[RELEASE]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,31 +26,56 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build extension
-        run: npm run build
-
-      - name: Create Zip Archive
+      - name: Extract version from manifest
+        id: version
         run: |
-          cd dist
-          zip -r ../tabnest-extension.zip .
-          cd ..
+          VERSION=$(node -e "console.log(require('./public/manifest.json').version)")
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Firefox extension
+        run: npm run package:firefox
+
+      - name: Build Chrome extension
+        run: npm run package:chrome
 
       - name: Create GitHub Release
+        id: release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: TabNest Build ${{ github.run_number }}
-          files: tabnest-extension.zip
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: TabNest ${{ steps.version.outputs.tag }}
+          files: |
+            tabnest-firefox.zip
+            tabnest-chrome.zip
           body: |
-            Automatized build from commit ${{ github.sha }}
-            
-            To install this extension:
-            1. Download `tabnest-extension.zip`
-            2. Unzip it.
-            3. Go to `chrome://extensions` in your browser.
-            4. Enable "Developer mode".
-            5. Click "Load unpacked" and select the unzipped folder.
+            ## TabNest ${{ steps.version.outputs.tag }}
+
+            Commit: ${{ github.sha }}
+
+            ### Firefox
+            1. Open Firefox and go to `about:debugging#/runtime/this-firefox`
+            2. Click "Load Temporary Add-on..."
+            3. Select the `tabnest-firefox.zip` file
+
+            ### Chrome
+            1. Unzip `tabnest-chrome.zip`
+            2. Go to `chrome://extensions`
+            3. Enable "Developer mode"
+            4. Click "Load unpacked" and select the unzipped folder
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to extension updater
+        if: steps.release.outcome == 'success'
+        run: |
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/tabnest-chrome.zip"
+          curl -s -X POST https://extension-updater.pages.dev/api/publish.json \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: ${{ secrets.EXT_UPDATER_KEY }}" \
+            -d "{
+              \"extId\": \"es.inled.tabnest\",
+              \"version\": \"${{ steps.version.outputs.tag }}\",
+              \"url\": \"${DOWNLOAD_URL}\"
+            }"

@@ -58,7 +58,21 @@ export const translations = {
     backToRoot: 'Volver al inicio',
     openFolder: 'Abrir carpeta',
     noResults: 'Sin resultados',
-    webSearch: 'Buscar en la web'
+    webSearch: 'Buscar en la web',
+    fontSize: 'Tamaño de fuente',
+    fontSizeDesc: 'Ajusta el tamaño del texto base',
+    customCss: 'CSS personalizado',
+    customCssDesc: 'Inyecta tu propio CSS en la página',
+    updates: 'Actualizaciones',
+    checkUpdates: 'Buscar actualizaciones',
+    checkingUpdates: 'Buscando...',
+    upToDate: 'Estás en la última versión',
+    updateAvailableV: 'Versión {version} disponible',
+    currentVersion: 'Versión actual',
+    lastCheck: 'Última comprobación',
+    never: 'Nunca',
+    hoursAgo: 'hace {hours}h',
+    justNow: 'Ahora mismo'
   },
   en: {
     settings: 'Settings',
@@ -117,7 +131,21 @@ export const translations = {
     backToRoot: 'Back to root',
     openFolder: 'Open folder',
     noResults: 'No results',
-    webSearch: 'Search the web'
+    webSearch: 'Search the web',
+    fontSize: 'Font size',
+    fontSizeDesc: 'Adjust the base text size',
+    customCss: 'Custom CSS',
+    customCssDesc: 'Inject your own CSS into the page',
+    updates: 'Updates',
+    checkUpdates: 'Check for updates',
+    checkingUpdates: 'Checking...',
+    upToDate: 'You are on the latest version',
+    updateAvailableV: 'Version {version} available',
+    currentVersion: 'Current version',
+    lastCheck: 'Last check',
+    never: 'Never',
+    hoursAgo: '{hours}h ago',
+    justNow: 'Just now'
   }
 };
 

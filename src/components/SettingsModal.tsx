@@ -1,11 +1,21 @@
 import React from 'react';
-import { X, Image as ImageIcon, Search, Rss, Trash2, Bookmark as BookmarkIcon, Languages } from 'lucide-react';
+import { X, Image as ImageIcon, Search, Rss, Trash2, Bookmark as BookmarkIcon, Languages, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Settings } from '../hooks/useSettings';
 import type { NewsSource } from '../hooks/useNewsFeed';
 import type { Bookmark, Folder as FolderType } from '../hooks/useBookmarks';
 import { BookmarkManager } from './BookmarkManager';
 import { t } from '../utils/i18n';
+
+interface UpdaterProps {
+  isChrome: boolean;
+  updateUrl: string | null;
+  latestVersion: string | null;
+  currentVersion: string | null;
+  isChecking: boolean;
+  lastCheck: number | null;
+  checkForUpdates: () => Promise<void>;
+}
 
 interface SettingsModalProps {
   settings: Settings;
@@ -25,6 +35,7 @@ interface SettingsModalProps {
   onUpdateFolder: (id: string, updates: Partial<FolderType>) => void;
   onUpdateBookmark?: (id: string, updates: Partial<Bookmark>) => void;
   onRefreshFavicons: () => Promise<void>;
+  updater: UpdaterProps;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ 
@@ -44,7 +55,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onMoveBookmark,
   onUpdateFolder,
   onUpdateBookmark,
-  onRefreshFavicons
+  onRefreshFavicons,
+  updater
 }) => {
   const lang = settings.language;
   const [isRefreshingFavicons, setIsRefreshingFavicons] = React.useState(false);
@@ -60,14 +72,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
     >
       <motion.div 
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 10 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="bg-slate-950/60 backdrop-blur-2xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] flex flex-col"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        transition={{ duration: 0.15 }}
+        className="bg-slate-900/95 backdrop-blur-md border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl flex flex-col"
       >
         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
           <h2 className="text-xl font-bold tracking-tight">{t('settings', lang)}</h2>
@@ -78,39 +90,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div className="p-6 overflow-y-auto flex-grow space-y-8 custom-scrollbar bg-black/20">
           {/* Idioma */}
-          <motion.section 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.1 }}
-          >
-            <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
-              <Languages size={18} /> {t('language', lang)}
+          <section>
+            <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+              <Languages size={16} /> {t('language', lang)}
             </h3>
-            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl w-fit border border-white/5 mb-6">
+            <div className="flex gap-1 p-1 bg-white/5 rounded-lg w-fit border border-white/5 mb-6">
               {(['es', 'en'] as const).map(l => (
                 <button
                   key={l}
                   onClick={() => onUpdate({ language: l })}
-                  className={`px-6 py-2 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all ${settings.language === l ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-white/5 text-white/40'}`}
+                  className={`px-5 py-1.5 rounded-lg font-medium text-xs transition-colors ${settings.language === l ? 'bg-blue-500/80 text-white' : 'hover:bg-white/5 text-white/40'}`}
                 >
                   {l === 'es' ? 'Español' : 'English'}
                 </button>
               ))}
             </div>
-          </motion.section>
+          </section>
 
           {/* Gestión de Marcadores */}
-          <motion.section 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.2 }}
-          >
+          <section>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="flex items-center gap-2 font-bold text-blue-400 text-sm uppercase tracking-widest">
-                <BookmarkIcon size={18} /> {t('bookmarks', lang)}
+              <h3 className="flex items-center gap-2 font-medium text-blue-400/80 text-sm">
+                <BookmarkIcon size={16} /> {t('bookmarks', lang)}
               </h3>
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('showDefaultBookmarks', lang)}</span>
+                <span className="text-[10px] font-medium text-white/30">{t('showDefaultBookmarks', lang)}</span>
                 <button 
                   onClick={() => onUpdate({ showDefaultBookmarks: !settings.showDefaultBookmarks })}
                   className={`w-10 h-5 rounded-full transition-all relative ${settings.showDefaultBookmarks ? 'bg-blue-500' : 'bg-white/10'}`}
@@ -140,21 +144,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button 
                 onClick={handleRefreshFavicons}
                 disabled={isRefreshingFavicons}
-                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isRefreshingFavicons ? 'bg-white/10 text-white/20' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                className={`px-5 py-1.5 rounded-lg text-xs font-medium transition-colors ${isRefreshingFavicons ? 'bg-white/10 text-white/20' : 'bg-white/10 hover:bg-white/15 text-white/70'}`}
               >
                 {isRefreshingFavicons ? '...' : t('download', lang)}
               </button>
             </div>
-          </motion.section>
+          </section>
 
           {/* Fondos */}
-          <motion.section 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.3 }}
-          >
-            <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
-              <ImageIcon size={18} /> {t('backgrounds', lang)}
+          <section>
+            <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+              <ImageIcon size={16} /> {t('backgrounds', lang)}
             </h3>
             
             <div className="grid grid-cols-3 gap-3 mb-6">
@@ -192,7 +192,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="space-y-4 bg-white/5 p-5 rounded-2xl border border-white/5 shadow-inner text-white">
               <div>
-                <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('addByUrl', lang)}</label>
+                <label className="block text-[10px] font-medium text-white/25 mb-2">{t('addByUrl', lang)}</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
@@ -217,7 +217,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('uploadImage', lang)}</label>
+                <label className="block text-[10px] font-medium text-white/25 mb-2">{t('uploadImage', lang)}</label>
                 <input 
                   type="file" 
                   accept="image/*"
@@ -253,7 +253,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     animate={{ height: 'auto', opacity: 1 }}
                     className="flex items-center justify-between overflow-hidden"
                   >
-                    <span className="text-xs text-white/40 font-bold uppercase tracking-widest">{t('interval', lang)}</span>
+                    <span className="text-xs text-white/30 font-medium">{t('interval', lang)}</span>
                     <input 
                       type="number" 
                       min="1"
@@ -265,17 +265,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 )}
               </div>
             </div>
-          </motion.section>
+          </section>
 
           {/* Motores de Búsqueda */}
-          <motion.section 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.4 }}
-          >
-            <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
-              <Search size={18} /> {t('searchEngines', lang)}
-            </h3>
+          <section>
+              <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+                <Search size={16} /> {t('searchEngines', lang)}
+              </h3>
             
             <div className="grid grid-cols-2 gap-3 mb-4">
               {settings.customSearchEngines.map(engine => (
@@ -305,7 +301,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4 shadow-inner">
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('addCustomEngine', lang)}</p>
+              <p className="text-[10px] font-medium text-white/25">{t('addCustomEngine', lang)}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input 
                   type="text" 
@@ -340,17 +336,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {t('save', lang)}
               </button>
             </div>
-          </motion.section>
+          </section>
 
           {/* Noticias */}
-          <motion.section 
-            initial={{ opacity: 0, x: -10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.5 }}
-          >
-            <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400 text-sm uppercase tracking-widest">
-              <Rss size={18} /> {t('rssSources', lang)}
-            </h3>
+          <section>
+              <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+                <Rss size={16} /> {t('rssSources', lang)}
+              </h3>
             <div className="space-y-3 mb-6">
               {newsSources.map(source => (
                 <div key={source.url} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group transition-all hover:bg-white/10">
@@ -377,7 +369,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4 shadow-inner">
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('addRssSource', lang)}</p>
+              <p className="text-[10px] font-medium text-white/25">{t('addRssSource', lang)}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input 
                   type="text" 
@@ -407,7 +399,105 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {t('save', lang)}
               </button>
             </div>
-          </motion.section>
+          </section>
+
+          {/* Apariencia */}
+          <section>
+            <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+              {t('appearance', lang)}
+            </h3>
+            <div className="space-y-4 bg-white/5 p-5 rounded-2xl border border-white/5">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-white/80">{t('fontSize', lang)}</span>
+                  <span className="text-xs text-white/40 font-mono">{settings.fontSize}px</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="12" 
+                  max="24" 
+                  step="1"
+                  value={settings.fontSize}
+                  onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) })}
+                  className="w-full accent-blue-500"
+                />
+                <p className="text-[10px] text-white/30 mt-1">{t('fontSizeDesc', lang)}</p>
+              </div>
+
+              <div className="pt-4 border-t border-white/5">
+                <label className="block text-sm text-white/80 mb-2">{t('customCss', lang)}</label>
+                <textarea 
+                  value={settings.customCss}
+                  onChange={(e) => onUpdate({ customCss: e.target.value })}
+                  placeholder="/* tu CSS aquí */"
+                  className="w-full h-32 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-xs font-mono outline-none focus:border-blue-500 text-white/70 transition-all placeholder-white/20 resize-none custom-scrollbar"
+                />
+                <p className="text-[10px] text-white/30 mt-1">{t('customCssDesc', lang)}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Actualizaciones — Solo Chrome */}
+          {updater.isChrome && (
+            <section>
+              <h3 className="flex items-center gap-2 font-medium mb-4 text-blue-400/80 text-sm">
+                <RefreshCw size={16} /> {t('updates', lang)}
+              </h3>
+              <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">{t('currentVersion', lang)}</span>
+                  <span className="text-xs text-white/40 font-mono">{updater.currentVersion ?? '—'}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">{t('lastCheck', lang)}</span>
+                  <span className="text-xs text-white/40">
+                    {updater.lastCheck
+                      ? (() => {
+                          const diff = Date.now() - updater.lastCheck;
+                          if (diff < 60_000) return t('justNow', lang);
+                          const hours = Math.floor(diff / 3_600_000);
+                          if (hours < 1) return t('justNow', lang);
+                          return t('hoursAgo', lang).replace('{hours}', String(hours));
+                        })()
+                      : t('never', lang)}
+                  </span>
+                </div>
+
+                {updater.updateUrl && updater.latestVersion && (
+                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                    <p className="text-sm font-semibold text-blue-300 mb-2">
+                      {t('updateAvailableV', lang).replace('{version}', updater.latestVersion)}
+                    </p>
+                    <a
+                      href={updater.updateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                    >
+                      {t('download', lang)}
+                    </a>
+                  </div>
+                )}
+
+                {updater.currentVersion && !updater.updateUrl && !updater.isChecking && (
+                  <p className="text-xs text-white/30">{t('upToDate', lang)}</p>
+                )}
+
+                <button
+                  onClick={updater.checkForUpdates}
+                  disabled={updater.isChecking}
+                  className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    updater.isChecking
+                      ? 'bg-white/10 text-white/20 cursor-not-allowed'
+                      : 'bg-white/10 hover:bg-white/15 text-white/70'
+                  }`}
+                >
+                  {updater.isChecking ? t('checkingUpdates', lang) : t('checkUpdates', lang)}
+                </button>
+              </div>
+            </section>
+          )}
         </div>
       </motion.div>
     </motion.div>
