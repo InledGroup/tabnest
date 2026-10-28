@@ -10,7 +10,15 @@ Más de 400 canales, medios y radios nacionales. Añade los que quieras.
 Marcadores ya predefinidos opcionales por si quieres no tener que preparar todo.   
 Busqueda con IA integrada con Google AI Mode.   
 
-## Comandos
+## Novedades!  
+- Interfaz sin ai-slop
+- La radio ya no se apaga cuando cierras la UI de radio
+- Marcadores individuales + carpetas unificados
+- 3 nuevas vistas para marcadores
+- Motor de búsqueda Start eliminado
+- Corregidos los errores reportados
+
+## Comandos útiles en su desarrollo
 
 ### Testear
 ```bash
