@@ -10,26 +10,10 @@
     "storage",
     "bookmarks",
     "alarms",
-    "declarativeNetRequest",
-    "scripting"
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "<all_urls>"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["*://*.mitele.es/*", "*://*.mediasetinfinity.es/*"],
-      "js": ["assets/streamSync.js"],
-      "run_at": "document_start",
-      "all_frames": true
-    },
-    {
-      "matches": ["*://*.mitele.es/*", "*://*.mediasetinfinity.es/*"],
-      "js": ["assets/playerCore.js"],
-      "run_at": "document_start",
-      "all_frames": true,
-      "world": "MAIN"
-    }
   ],
   "declarative_net_request": {
     "rule_resources": [

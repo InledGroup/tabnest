@@ -9,15 +9,16 @@ import { SettingsModal } from './components/SettingsModal';
 import { TVTuner } from './components/TVTuner';
 import { RadioTuner } from './components/RadioTuner';
 import { LegalViewer } from './components/LegalViewer';
-import { StartBanner } from './components/StartBanner';
 import { useSettings } from './hooks/useSettings';
 import { useNewsFeed } from './hooks/useNewsFeed';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useTV } from './hooks/useTV';
 import { useRadio } from './hooks/useRadio';
+import { useRadioPlayer } from './hooks/useRadioPlayer';
 import { useUpdater } from './hooks/useUpdater';
 import { t } from './utils/i18n';
 import { DEFAULT_BOOKMARKS, DEFAULT_FOLDERS } from './utils/defaultBookmarks';
+import { ensureViewerFrameRule } from './utils/frameHeaders';
 
 function App() {
   const { settings, updateSettings, loading: settingsLoading } = useSettings();
@@ -49,6 +50,8 @@ function App() {
   } = useNewsFeed();
   const { channels: tvChannels, loading: tvLoading } = useTV();
   const { channels: radioChannels, loading: radioLoading } = useRadio();
+  const radioPlayer = useRadioPlayer();
+  const { audioRef: radioAudioRef, plainAudioRef: radioPlainAudioRef } = radioPlayer;
   
   const [currentTime, setCurrentTime] = useState(moment());
   const [showSettings, setShowSettings] = useState(false);
@@ -56,6 +59,10 @@ function App() {
   const [showRadio, setShowRadio] = useState(false);
   const [legalView, setLegalView] = useState<'disclaimer' | 'privacy' | 'terms' | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    ensureViewerFrameRule();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,7 +145,10 @@ function App() {
       )}
 
       {/* Contenido */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center p-8">
+      <div className={`relative z-10 min-h-screen flex flex-col items-center p-8 ${settings.bookmarkView === 'dock' ? 'pb-32' : ''}`}>
+        {/* Audio de radio: vive fuera del modal para que siga sonando al cerrarlo */}
+        <audio ref={radioAudioRef} className="hidden" preload="none" />
+        <audio ref={radioPlainAudioRef} className="hidden" preload="none" />
         {/* Banner de Actualización */}
         <AnimatePresence>
           {updater.updateUrl && (
@@ -172,7 +182,7 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={scrollToTop}
-                className="p-2 bg-black/30 rounded-full text-white/60 hover:text-white hover:bg-black/50 transition-colors"
+                className="p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/70 hover:text-white hover:bg-black/60 transition-colors"
                 title="Subir"
               >
                 <ChevronUp size={18} />
@@ -181,7 +191,7 @@ function App() {
           </AnimatePresence>
           <button 
             onClick={scrollToBottom}
-            className="p-2 bg-black/30 rounded-full text-white/60 hover:text-white hover:bg-black/50 transition-colors"
+            className="p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/70 hover:text-white hover:bg-black/60 transition-colors"
             title="Bajar"
           >
             <ChevronDown size={18} />
@@ -192,19 +202,21 @@ function App() {
         <div className="fixed top-5 right-5 flex flex-col gap-2 z-40">
           <button 
             onClick={() => setShowSettings(true)}
-            className="p-2.5 bg-black/30 rounded-xl text-white/60 hover:text-white hover:bg-black/50 transition-colors"
+            className="p-2.5 bg-black/40 backdrop-blur-md rounded-xl text-white/70 hover:text-white hover:bg-black/60 transition-colors"
           >
             <SettingsIcon size={20} />
           </button>
           <button 
             onClick={() => setShowTV(true)}
-            className="p-2.5 bg-blue-500/15 rounded-xl text-blue-400/80 hover:text-blue-300 hover:bg-blue-500/25 transition-colors"
+            className="p-2.5 bg-black/40 backdrop-blur-md rounded-xl text-white/70 hover:text-white hover:bg-black/60 transition-colors"
+            title={t('tv', lang)}
           >
             <Tv size={20} />
           </button>
           <button 
             onClick={() => setShowRadio(true)}
-            className="p-2.5 bg-purple-500/15 rounded-xl text-purple-400/80 hover:text-purple-300 hover:bg-purple-500/25 transition-colors"
+            className={`p-2.5 bg-black/40 backdrop-blur-md rounded-xl text-white/70 hover:text-white hover:bg-black/60 transition-colors ${radioPlayer.currentChannel ? 'ring-1 ring-white/35' : ''}`}
+            title={t('radio', lang)}
           >
             <Radio size={20} />
           </button>
@@ -213,10 +225,10 @@ function App() {
         {/* Reloj */}
         {settings.showClock && (
           <div className="text-center mt-10 mb-10 select-none">
-            <h1 className="text-8xl font-extralight tracking-tighter text-white/90">
+            <h1 className="text-8xl font-light tracking-tight text-white/95 tabular-nums">
               {currentTime.format('HH:mm')}
             </h1>
-            <p className="text-xl text-white/60 font-light mt-1 capitalize">
+            <p className="text-lg text-white/75 font-normal mt-1 capitalize">
               {currentTime.format('dddd, D [de] MMMM')}
             </p>
           </div>
@@ -240,6 +252,8 @@ function App() {
             folders={effectiveFolders}
             expandedFolderIds={expandedFolderIds}
             onToggleFolder={toggleFolder}
+            view={settings.bookmarkView || 'cards'}
+            onViewChange={view => updateSettings({ bookmarkView: view })}
             lang={lang}
           />
         </div>
@@ -256,25 +270,19 @@ function App() {
           />
         </div>
 
-        {/* Banner de Start */}
-        <StartBanner 
-          isVisible={!settings.dismissedStartBanner}
-          onDismiss={() => updateSettings({ dismissedStartBanner: true })}
-        />
-
         {/* Footer Legal */}
         <footer className="w-full max-w-6xl mx-auto py-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/5 opacity-30 hover:opacity-80 transition-opacity">
-          <p className="text-[10px] text-white/40">
+          <p className="text-[10px] text-white/60">
             TabNest © 2026 • {t('tv', lang)} Data by TDTChannels
           </p>
           <div className="flex items-center gap-6 text-white">
-            <button onClick={() => setLegalView('disclaimer')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
+            <button onClick={() => setLegalView('disclaimer')} className="text-[10px] text-white/60 hover:text-white/70 transition-colors">
               {t('disclaimer', lang)}
             </button>
-            <button onClick={() => setLegalView('privacy')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
+            <button onClick={() => setLegalView('privacy')} className="text-[10px] text-white/60 hover:text-white/70 transition-colors">
               {t('privacy', lang)}
             </button>
-            <button onClick={() => setLegalView('terms')} className="text-[10px] text-white/40 hover:text-white/70 transition-colors">
+            <button onClick={() => setLegalView('terms')} className="text-[10px] text-white/60 hover:text-white/70 transition-colors">
               {t('terms', lang)}
             </button>
           </div>
@@ -321,6 +329,7 @@ function App() {
               key="radio"
               channels={radioChannels}
               loading={radioLoading}
+              player={radioPlayer}
               onClose={() => setShowRadio(false)}
               lang={lang}
             />

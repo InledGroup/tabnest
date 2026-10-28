@@ -72,7 +72,11 @@ export const translations = {
     lastCheck: 'Última comprobación',
     never: 'Nunca',
     hoursAgo: 'hace {hours}h',
-    justNow: 'Ahora mismo'
+    justNow: 'Ahora mismo',
+    favorites: 'Favoritos',
+    viewCards: 'Tarjetas',
+    viewIcons: 'Iconos',
+    viewDock: 'Dock'
   },
   en: {
     settings: 'Settings',
@@ -145,7 +149,11 @@ export const translations = {
     lastCheck: 'Last check',
     never: 'Never',
     hoursAgo: '{hours}h ago',
-    justNow: 'Just now'
+    justNow: 'Just now',
+    favorites: 'Favorites',
+    viewCards: 'Cards',
+    viewIcons: 'Icons',
+    viewDock: 'Dock'
   }
 };
 

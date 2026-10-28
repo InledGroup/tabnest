@@ -55,16 +55,16 @@ export const LegalViewer: React.FC<LegalViewerProps> = ({ onClose, initialView =
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="bg-slate-900/90 border border-white/10 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+        className="bg-black/85 border border-white/10 w-full max-w-4xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
       >
         {/* Sidebar */}
         <div className="w-full md:w-64 bg-black/20 border-b md:border-b-0 md:border-r border-white/10 p-6 flex flex-col gap-2">
-          <h2 className="text-sm font-black text-white/30 uppercase tracking-widest mb-4">Información Legal</h2>
+          <h2 className="text-sm font-semibold text-white/70 mb-4">Información Legal</h2>
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as LegalType)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
             >
               <tab.icon size={18} />
               {tab.label}
@@ -73,7 +73,7 @@ export const LegalViewer: React.FC<LegalViewerProps> = ({ onClose, initialView =
           <div className="mt-auto pt-6 hidden md:block">
             <button 
               onClick={onClose}
-              className="w-full py-3 bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/40 rounded-2xl text-sm font-bold border border-white/5 transition-all"
+              className="w-full py-3 bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/60 rounded-2xl text-sm font-bold border border-white/5 transition-all"
             >
               Cerrar
             </button>
@@ -85,7 +85,7 @@ export const LegalViewer: React.FC<LegalViewerProps> = ({ onClose, initialView =
           <div className="absolute top-6 right-6 md:hidden">
             <button onClick={onClose} className="p-2 bg-white/10 rounded-full"><X size={20} /></button>
           </div>
-          <article className="prose prose-invert max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-p:text-white/60 prose-strong:text-white prose-a:text-blue-400">
+          <article className="prose prose-invert max-w-none prose-headings:font-semibold prose-p:text-white/70 prose-strong:text-white prose-a:text-white/85 underline-offset-4">
             <ReactMarkdown>{getContent()}</ReactMarkdown>
           </article>
         </div>

@@ -121,7 +121,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
 
         <div className="flex items-center gap-3">
           <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/55" size={16} />
             <input
               type="text"
               value={filter}
@@ -144,7 +144,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
         {loading ? (
           <div className="h-full flex flex-col items-center justify-center gap-4">
             <Loader2 className="w-12 h-12 text-blue-500/30 animate-spin" />
-            <p className="text-white/40 text-sm">Sintonizando canales...</p>
+            <p className="text-white/60 text-sm">Sintonizando canales...</p>
           </div>
         ) : (
           ambits.map((ambit) => (
@@ -211,23 +211,23 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                                       className="h-full bg-blue-500"
                                     />
                                   </div>
-                                  <span className="text-[9px] text-white/40 font-mono">
+                                  <span className="text-[9px] text-white/60 font-mono">
                                     {moment(current.end).format('HH:mm')}
                                   </span>
                                 </div>
                               </div>
                             ) : (
                               <div className="h-[36px] flex items-center">
-                                <p className="text-[10px] text-white/25 italic">Sin información EPG</p>
+                                <p className="text-[10px] text-white/55 italic">Sin información EPG</p>
                               </div>
                             )}
 
                             {next && (
                               <div className="pt-1.5 border-t border-white/5">
-                                <p className="text-[10px] text-white/40">
+                                <p className="text-[10px] text-white/60">
                                   {t('next', lang)}: {moment(next.start).format('HH:mm')}
                                 </p>
-                                <ScrollingText className="text-[10px] text-white/40">
+                                <ScrollingText className="text-[10px] text-white/60">
                                   {next.name}
                                 </ScrollingText>
                               </div>
@@ -250,7 +250,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
         )}
 
         {!loading && filteredChannels.length === 0 && (
-          <div className="text-center py-16 text-white/30">
+          <div className="text-center py-16 text-white/55">
             <Tv size={48} className="mx-auto mb-3 opacity-30" />
             <p className="text-sm">{t('noChannels', lang)}</p>
           </div>
@@ -344,7 +344,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                   >
                     <div className="p-4 border-b border-white/10 flex items-center justify-between">
                       <h3 className="text-sm font-medium text-white">{t('schedule', lang)}</h3>
-                      <button onClick={() => setShowSchedule(false)} className="text-white/40 hover:text-white transition-colors"><X size={16} /></button>
+                      <button onClick={() => setShowSchedule(false)} className="text-white/60 hover:text-white transition-colors"><X size={16} /></button>
                     </div>
                     <div className="flex-grow overflow-y-auto p-3 space-y-2 custom-scrollbar">
                       {selectedChannel.epg.map((program, idx) => {
@@ -367,7 +367,7 @@ export const TVTuner: React.FC<TVTunerProps> = ({ channels, loading, onClose, la
                             </div>
                             <p className="text-xs text-white/80 leading-tight">{program.name}</p>
                             {program.description && (
-                              <p className="text-[10px] text-white/40 line-clamp-2 mt-1.5 leading-relaxed">{program.description}</p>
+                              <p className="text-[10px] text-white/60 line-clamp-2 mt-1.5 leading-relaxed">{program.description}</p>
                             )}
                           </div>
                         );

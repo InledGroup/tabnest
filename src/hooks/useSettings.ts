@@ -15,6 +15,8 @@ export interface SearchEngine {
   url: string;
 }
 
+export type BookmarkView = 'cards' | 'icons' | 'dock';
+
 export interface Settings {
   backgrounds: BackgroundImage[];
   currentBackgroundId: string;
@@ -26,7 +28,7 @@ export interface Settings {
   customSearchEngines: SearchEngine[];
   language: Language;
   showDefaultBookmarks: boolean;
-  dismissedStartBanner: boolean;
+  bookmarkView: BookmarkView;
   fontSize: number;
   customCss: string;
 }
@@ -39,7 +41,6 @@ const defaultBackgrounds: BackgroundImage[] = [
 ];
 
 const defaultSearchEngines: SearchEngine[] = [
-  { id: 'start', name: 'Start', url: 'https://start.inled.es/search?q=' },
   { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=' },
   { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=' },
   { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
@@ -53,11 +54,11 @@ const defaultSettings: Settings = {
   rotationInterval: 5,
   showClock: true,
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  searchEngineId: 'start',
+  searchEngineId: 'google',
   customSearchEngines: defaultSearchEngines,
   language: 'es',
   showDefaultBookmarks: true,
-  dismissedStartBanner: false,
+  bookmarkView: 'cards',
   fontSize: 16,
   customCss: ''
 };
@@ -68,27 +69,12 @@ export const useSettings = () => {
 
   useEffect(() => {
     getStorage('settings', defaultSettings).then(savedSettings => {
-      // Aseguramos que los motores por defecto estén presentes incluso en instalaciones existentes
-      const engines = savedSettings.customSearchEngines || [];
-      const hasStart = engines.some(e => e.id === 'start');
-      
-      if (!hasStart) {
-        // Si no tiene Start, lo añadimos al principio
-        savedSettings.customSearchEngines = [
-          defaultSearchEngines[0],
-          ...engines
-        ];
-      }
+      // El motor Start se retiró del proyecto: se filtra de las configs existentes.
+      const engines = (savedSettings.customSearchEngines || []).filter(e => e.id !== 'start');
+      savedSettings.customSearchEngines = engines.length ? engines : defaultSearchEngines;
 
-      // Si por alguna razón la lista de motores está vacía o es inválida, forzamos los preestablecidos
-      if (!savedSettings.customSearchEngines || savedSettings.customSearchEngines.length === 0) {
-        savedSettings.customSearchEngines = defaultSearchEngines;
-        savedSettings.searchEngineId = 'start';
-      }
-
-      // Si el motor actual no existe en la lista, volvemos a 'start'
       if (!savedSettings.customSearchEngines.some(e => e.id === savedSettings.searchEngineId)) {
-        savedSettings.searchEngineId = 'start';
+        savedSettings.searchEngineId = savedSettings.customSearchEngines[0].id;
       }
 
       setSettings(savedSettings);

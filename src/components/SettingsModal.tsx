@@ -79,7 +79,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ duration: 0.15 }}
-        className="bg-slate-900/95 backdrop-blur-md border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl flex flex-col"
+        className="bg-black/85 backdrop-blur-md border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-2xl flex flex-col"
       >
         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
           <h2 className="text-xl font-bold tracking-tight">{t('settings', lang)}</h2>
@@ -99,7 +99,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <button
                   key={l}
                   onClick={() => onUpdate({ language: l })}
-                  className={`px-5 py-1.5 rounded-lg font-medium text-xs transition-colors ${settings.language === l ? 'bg-blue-500/80 text-white' : 'hover:bg-white/5 text-white/40'}`}
+                  className={`px-5 py-1.5 rounded-lg font-medium text-xs transition-colors ${settings.language === l ? 'bg-blue-500/80 text-white' : 'hover:bg-white/5 text-white/60'}`}
                 >
                   {l === 'es' ? 'Español' : 'English'}
                 </button>
@@ -114,7 +114,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <BookmarkIcon size={16} /> {t('bookmarks', lang)}
               </h3>
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-medium text-white/30">{t('showDefaultBookmarks', lang)}</span>
+                <span className="text-[10px] font-medium text-white/55">{t('showDefaultBookmarks', lang)}</span>
                 <button 
                   onClick={() => onUpdate({ showDefaultBookmarks: !settings.showDefaultBookmarks })}
                   className={`w-10 h-5 rounded-full transition-all relative ${settings.showDefaultBookmarks ? 'bg-blue-500' : 'bg-white/10'}`}
@@ -139,12 +139,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-white/80">{t('refreshFavicons', lang)}</p>
-                <p className="text-[10px] text-white/40 mt-1 max-w-[200px]">{t('refreshFaviconsDesc', lang)}</p>
+                <p className="text-[10px] text-white/60 mt-1 max-w-[200px]">{t('refreshFaviconsDesc', lang)}</p>
               </div>
               <button 
                 onClick={handleRefreshFavicons}
                 disabled={isRefreshingFavicons}
-                className={`px-5 py-1.5 rounded-lg text-xs font-medium transition-colors ${isRefreshingFavicons ? 'bg-white/10 text-white/20' : 'bg-white/10 hover:bg-white/15 text-white/70'}`}
+                className={`px-5 py-1.5 rounded-lg text-xs font-medium transition-colors ${isRefreshingFavicons ? 'bg-white/10 text-white/55' : 'bg-white/10 hover:bg-white/15 text-white/70'}`}
               >
                 {isRefreshingFavicons ? '...' : t('download', lang)}
               </button>
@@ -192,12 +192,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="space-y-4 bg-white/5 p-5 rounded-2xl border border-white/5 shadow-inner text-white">
               <div>
-                <label className="block text-[10px] font-medium text-white/25 mb-2">{t('addByUrl', lang)}</label>
+                <label className="block text-[10px] font-medium text-white/55 mb-2">{t('addByUrl', lang)}</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
                     id="new-bg-url"
-                    className="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/20"
+                    className="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/45"
                     placeholder="https://..."
                   />
                   <button 
@@ -217,7 +217,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] font-medium text-white/25 mb-2">{t('uploadImage', lang)}</label>
+                <label className="block text-[10px] font-medium text-white/55 mb-2">{t('uploadImage', lang)}</label>
                 <input 
                   type="file" 
                   accept="image/*"
@@ -233,7 +233,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       reader.readAsDataURL(file);
                     }
                   }}
-                  className="w-full text-xs text-white/40 file:mr-4 file:py-2.5 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer transition-all"
+                  className="w-full text-xs text-white/60 file:mr-4 file:py-2.5 file:px-6 file:rounded-xl file:border-0 file:text-[11px] file:font-medium file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer transition-all"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     animate={{ height: 'auto', opacity: 1 }}
                     className="flex items-center justify-between overflow-hidden"
                   >
-                    <span className="text-xs text-white/30 font-medium">{t('interval', lang)}</span>
+                    <span className="text-xs text-white/55 font-medium">{t('interval', lang)}</span>
                     <input 
                       type="number" 
                       min="1"
@@ -280,8 +280,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onClick={() => onUpdate({ searchEngineId: engine.id })}
                     className={`w-full p-4 rounded-2xl border text-left transition-all pr-12 ${settings.searchEngineId === engine.id ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/5' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
                   >
-                    <p className={`text-sm font-bold capitalize ${settings.searchEngineId === engine.id ? 'text-blue-400' : 'text-white/80'}`}>{engine.name}</p>
-                    <p className="text-[10px] text-white/20 truncate mt-1">{engine.url}</p>
+                    <p className={`text-sm font-medium ${settings.searchEngineId === engine.id ? 'text-white' : 'text-white/80'}`}>{engine.name}</p>
+                    <p className="text-[10px] text-white/55 truncate mt-1">{engine.url}</p>
                   </button>
                   {settings.customSearchEngines.length > 1 && (
                     <button 
@@ -291,7 +291,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         const nextId = settings.searchEngineId === engine.id ? updated[0].id : settings.searchEngineId;
                         onUpdate({ customSearchEngines: updated, searchEngineId: nextId });
                       }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/55 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -301,19 +301,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4 shadow-inner">
-              <p className="text-[10px] font-medium text-white/25">{t('addCustomEngine', lang)}</p>
+              <p className="text-[10px] font-medium text-white/55">{t('addCustomEngine', lang)}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input 
                   type="text" 
                   id="engine-name"
                   placeholder={t('name', lang)}
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/20"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/45"
                 />
                 <input 
                   type="text" 
                   id="engine-url"
                   placeholder="URL (ej: https://.../search?q=)"
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/20"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/45"
                 />
               </div>
               <button 
@@ -348,7 +348,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div key={source.url} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group transition-all hover:bg-white/10">
                   <div className="flex-grow min-w-0">
                     <p className="text-sm font-bold text-white/80">{source.name}</p>
-                    <p className="text-[10px] text-white/20 truncate mt-1">{source.url}</p>
+                    <p className="text-[10px] text-white/55 truncate mt-1">{source.url}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <button 
@@ -359,7 +359,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </button>
                     <button 
                       onClick={() => onRemoveSource(source.url)}
-                      className="p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/20 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                      className="p-2 bg-black/40 backdrop-blur-md rounded-xl text-white/55 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 shadow-lg"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -369,19 +369,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4 shadow-inner">
-              <p className="text-[10px] font-medium text-white/25">{t('addRssSource', lang)}</p>
+              <p className="text-[10px] font-medium text-white/55">{t('addRssSource', lang)}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input 
                   type="text" 
                   id="rss-name"
                   placeholder={t('name', lang)}
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/20"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/45"
                 />
                 <input 
                   type="text" 
                   id="rss-url"
                   placeholder="URL Feed RSS"
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/20"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 text-white transition-all placeholder-white/45"
                 />
               </div>
               <button 
@@ -410,7 +410,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-white/80">{t('fontSize', lang)}</span>
-                  <span className="text-xs text-white/40 font-mono">{settings.fontSize}px</span>
+                  <span className="text-xs text-white/60 font-mono">{settings.fontSize}px</span>
                 </div>
                 <input 
                   type="range" 
@@ -421,7 +421,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) })}
                   className="w-full accent-blue-500"
                 />
-                <p className="text-[10px] text-white/30 mt-1">{t('fontSizeDesc', lang)}</p>
+                <p className="text-[10px] text-white/55 mt-1">{t('fontSizeDesc', lang)}</p>
               </div>
 
               <div className="pt-4 border-t border-white/5">
@@ -430,9 +430,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   value={settings.customCss}
                   onChange={(e) => onUpdate({ customCss: e.target.value })}
                   placeholder="/* tu CSS aquí */"
-                  className="w-full h-32 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-xs font-mono outline-none focus:border-blue-500 text-white/70 transition-all placeholder-white/20 resize-none custom-scrollbar"
+                  className="w-full h-32 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-xs font-mono outline-none focus:border-blue-500 text-white/70 transition-all placeholder-white/45 resize-none custom-scrollbar"
                 />
-                <p className="text-[10px] text-white/30 mt-1">{t('customCssDesc', lang)}</p>
+                <p className="text-[10px] text-white/55 mt-1">{t('customCssDesc', lang)}</p>
               </div>
             </div>
           </section>
@@ -446,12 +446,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/80">{t('currentVersion', lang)}</span>
-                  <span className="text-xs text-white/40 font-mono">{updater.currentVersion ?? '—'}</span>
+                  <span className="text-xs text-white/60 font-mono">{updater.currentVersion ?? '—'}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/80">{t('lastCheck', lang)}</span>
-                  <span className="text-xs text-white/40">
+                  <span className="text-xs text-white/60">
                     {updater.lastCheck
                       ? (() => {
                           const diff = Date.now() - updater.lastCheck;
@@ -481,7 +481,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 )}
 
                 {updater.currentVersion && !updater.updateUrl && !updater.isChecking && (
-                  <p className="text-xs text-white/30">{t('upToDate', lang)}</p>
+                  <p className="text-xs text-white/55">{t('upToDate', lang)}</p>
                 )}
 
                 <button
@@ -489,7 +489,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   disabled={updater.isChecking}
                   className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${
                     updater.isChecking
-                      ? 'bg-white/10 text-white/20 cursor-not-allowed'
+                      ? 'bg-white/10 text-white/55 cursor-not-allowed'
                       : 'bg-white/10 hover:bg-white/15 text-white/70'
                   }`}
                 >

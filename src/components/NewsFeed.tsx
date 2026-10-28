@@ -66,26 +66,26 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({ news, loading, onRefresh, on
             )}
             <div className="p-4 flex flex-col flex-grow">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400/80">
+                <span className="text-[11px] font-medium px-1.5 py-0.5 rounded bg-white/10 text-white/75">
                   {item.source}
                 </span>
-                <span className="text-[10px] text-white/30">
+                <span className="text-[10px] text-white/55">
                   {new Date(item.pubDate).toLocaleDateString()}
                 </span>
               </div>
-              <h3 className="text-sm font-medium mb-2 line-clamp-2 leading-snug group-hover:text-blue-400/80 transition-colors">
+              <h3 className="text-sm font-medium mb-2 line-clamp-2 leading-snug group-hover:text-white transition-colors">
                 <a href={item.link} target="_blank" rel="noopener noreferrer">
                   {item.title}
                 </a>
               </h3>
-              <p className="text-xs text-white/40 mb-4 line-clamp-3 flex-grow">
+              <p className="text-xs text-white/60 mb-4 line-clamp-3 flex-grow">
                 {item.contentSnippet}
               </p>
               <a 
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[10px] text-white/25 group-hover:text-white/50 transition-colors"
+                className="inline-flex items-center gap-1.5 text-[11px] text-white/60 group-hover:text-white transition-colors"
               >
                 {t('readMore', lang)} <ExternalLink size={10} />
               </a>
@@ -100,7 +100,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({ news, loading, onRefresh, on
 
       {news.length === 0 && !loading && (
         <div className="text-center py-16 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5">
-          <p className="text-white/30 text-sm">{t('noNews', lang)}</p>
+          <p className="text-white/55 text-sm">{t('noNews', lang)}</p>
         </div>
       )}
     </div>

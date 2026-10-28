@@ -208,7 +208,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     return (
       <>
         {text.slice(0, idx)}
-        <span className="text-blue-400 underline">{text.slice(idx, idx + q.length)}</span>
+        <span className="text-white/50 underline decoration-white/30">{text.slice(idx, idx + q.length)}</span>
         {text.slice(idx + q.length)}
       </>
     );
@@ -227,7 +227,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             <ArrowLeft size={12} />
             {t('backToRoot', lang)}
           </button>
-          <span className="text-white/20 text-xs">/</span>
+          <span className="text-white/55 text-xs">/</span>
           <span className="text-white/60 text-xs font-medium">
             {folderContext.emoji} {folderContext.title}
           </span>
@@ -252,11 +252,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           }`}
         />
         <Search
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white/70 transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-white/70 transition-colors"
           size={20}
         />
         {query && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/20 text-[10px]">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/55 text-[10px]">
             <CornerDownLeft size={12} />
           </div>
         )}
@@ -270,12 +270,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12 }}
             ref={resultsRef}
-            className="absolute left-0 right-0 mt-1 bg-slate-900/95 border border-white/10 rounded-xl overflow-hidden max-h-[60vh] overflow-y-auto custom-scrollbar"
+            className="absolute left-0 right-0 mt-1 bg-black/90 border border-white/10 rounded-xl overflow-hidden max-h-[60vh] overflow-y-auto custom-scrollbar"
           >
             {results.length === 0 && query && (
               <div className="p-6 text-center">
-                <p className="text-white/30 text-sm">{t('noResults', lang)}</p>
-                <p className="text-white/20 text-xs mt-1">{query}</p>
+                <p className="text-white/55 text-sm">{t('noResults', lang)}</p>
+                <p className="text-white/55 text-xs mt-1">{query}</p>
               </div>
             )}
 
@@ -311,10 +311,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     </div>
                     <div className="flex-grow min-w-0">
                       <ScrollingText className="text-sm font-medium text-white/90">{f.title}</ScrollingText>
-                      <p className="text-[10px] text-white/25">{t('openFolder', lang)}</p>
+                      <p className="text-[10px] text-white/55">{t('openFolder', lang)}</p>
                     </div>
                     {f.shortcut && (
-                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/30 shrink-0">
+                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/55 shrink-0">
                         {f.shortcut}
                       </kbd>
                     )}
@@ -344,21 +344,21 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                         className="w-4 h-4 shrink-0 rounded-sm"
                       />
                     ) : (
-                      <Globe size={16} className="text-white/20 shrink-0" />
+                      <Globe size={16} className="text-white/55 shrink-0" />
                     )}
                     <div className="flex-grow min-w-0">
                       <ScrollingText className="text-sm font-medium text-white/90">
                         {highlightMatch(b.title, query)}
                       </ScrollingText>
                       {item.folderName && (
-                        <p className="text-[10px] text-white/25">{item.folderName}</p>
+                        <p className="text-[10px] text-white/55">{item.folderName}</p>
                       )}
                       {!item.folderName && (
-                        <p className="text-[10px] text-white/15 truncate">{hostname}</p>
+                        <p className="text-[10px] text-white/50 truncate">{hostname}</p>
                       )}
                     </div>
                     {b.shortcut && (
-                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/30 shrink-0">
+                      <kbd className="px-1.5 py-0.5 bg-white/5 rounded text-[9px] font-mono text-white/55 shrink-0">
                         {b.shortcut}
                       </kbd>
                     )}
@@ -377,16 +377,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                      <Search size={16} className="text-blue-400/80" />
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                      <Search size={16} className="text-white/75" />
                     </div>
                     <div className="flex-grow min-w-0">
                       <ScrollingText className="text-sm font-medium text-white/90">
-                        {t('webSearch', lang)}: <span className="text-blue-400/80">{item.query}</span>
+                        {t('webSearch', lang)}: <span className="text-white">{item.query}</span>
                       </ScrollingText>
-                      <p className="text-[10px] text-white/25">{engine.name}</p>
+                      <p className="text-[10px] text-white/55">{engine.name}</p>
                     </div>
-                    <CornerDownLeft size={12} className="text-white/15 shrink-0" />
+                    <CornerDownLeft size={12} className="text-white/50 shrink-0" />
                   </div>
                 );
               }
@@ -401,16 +401,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     onMouseDown={(e) => { e.preventDefault(); executeResult(item); }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
-                      <span className="text-xs">AI</span>
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                      <span className="text-[11px] font-semibold text-white/75">IA</span>
                     </div>
                     <div className="flex-grow min-w-0">
                       <ScrollingText className="text-sm font-medium text-white/90">
-                        IA: <span className="text-purple-400/80">{item.query}</span>
+                        IA: <span className="text-white/90">{item.query}</span>
                       </ScrollingText>
-                      <p className="text-[10px] text-white/25">Google AI Mode</p>
+                      <p className="text-[10px] text-white/55">Google AI Mode</p>
                     </div>
-                    <CornerDownLeft size={12} className="text-white/15 shrink-0" />
+                    <CornerDownLeft size={12} className="text-white/50 shrink-0" />
                   </div>
                 );
               }
